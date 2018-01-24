@@ -19,9 +19,9 @@ We aim to achieve the following objectives by creating xpac, a package manager w
 - Ability to compile packages in the event that pre-compiled binaries are not present, or if the user wishes to do so
 - Create efficient algorithms in order to perform all of the above, and in doing so, create a rock-solid, stable package manager
 
-Core Dev Team - 
-Amol Moses Jha (amol@purdue.edu)
-Parth Shelgaonkar (parth@purdue.edu)
-Anunai Ishan (ia@purdue.edu)
-Adit Kumar (kumar245@purdue.edu)
+## Core Dev Team:
 
+ - Anunai Ishan (ia@purdue.edu)
+ - Amol Moses Jha (amol@purdue.edu)
+ - Adit Kumar (kumar245@purdue.edu)
+ - Parth Shelgaonkar (parth@purdue.edu)
