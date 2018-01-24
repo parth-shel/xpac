@@ -24,4 +24,3 @@ Amol Moses Jha (amol@purdue.edu)
 Parth Shelgaonkar (parth@purdue.edu)
 Anunai Ishan (ia@purdue.edu)
 Adit Kumar (kumar245@purdue.edu)
-
