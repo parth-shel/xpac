@@ -1,4 +1,4 @@
-# _**xpac**_ ** - ** _ _ **_A Cross-platform Package Manager_**
+# _**xpac**_ - **_A Cross-platform Package Manager_**
 
 ## Problem Statement:
 
