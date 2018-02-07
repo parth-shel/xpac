@@ -6,11 +6,19 @@
 #include<functional>
 
 class metadata{
-	private std::string pkg_name;
-	private std::string pkg_hash;
-	private std::vector<std::string> dep_list;
-	private std::hash<std::string> str_hash;
-	private int size;
-}
+
+	//Data Members:
+	private:
+	std::string pkg_name;
+	std::string pkg_id;
+	std::vector<std::string> * dep_list;
+	std::hash<std::string> str_hash;
+	int size;
+
+	//Member functions:
+	public:
+	metdata(std::string pkg_name, int size);
+	print_info();	//For debugging purposes only
+};
 
 #endif
