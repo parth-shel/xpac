@@ -17,8 +17,8 @@ class metadata{
 
 	//Member functions:
 	public:
-	metdata(std::string pkg_name, int size);
-	print_info();	//For debugging purposes only
+	metadata(std::string pkg_name, int size);
+	std::string get_info();
 };
 
 #endif
