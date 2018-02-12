@@ -8,7 +8,8 @@
 #include <stdio.h> // printf and standard I/O 
 #include <sys/socket.h> // socket, connect, socklen_t
 #include <arpa/inet.h> // sockaddr_in, inet_pton
-#include <string.h> // strlen
+#include <netdb.h> //hostent
+#include <string.h> // strlen, strcpy
 #include <stdlib.h> // atoi, EXIT_FAILURE, EXIT_SUCCESS
 #include <fcntl.h> // open, O_WRONLY, O_CREAT
 #include <unistd.h> // close, write, read
@@ -18,6 +19,7 @@
 #define MAX_SEND_BUF 256
 
 int recv_file(int ,char*);
+int hostname_to_ip(char*, char*);
 
 int main(int argc, char* argv[]) {
  	int sock_fd;
@@ -34,8 +36,15 @@ int main(int argc, char* argv[]) {
  	sock_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
  	srv_addr.sin_family = AF_INET; // internet address
 
+	// DNS lookup
+	char * IP = (char *) malloc(128 * sizeof(char));
+	if( hostname_to_ip(argv[2], IP) < 0 ) {
+		printf("DNS lookup failure\n");
+		exit(EXIT_FAILURE);
+	}
+
  	// convert command line argument to numeric IP
- 	if ( inet_pton(AF_INET, argv[2], &(srv_addr.sin_addr)) < 1 ) {
+ 	if ( inet_pton(AF_INET, IP, &(srv_addr.sin_addr)) < 1 ) {
  		printf("invalid IP address\n");
 		exit(EXIT_FAILURE);
  	}
@@ -63,6 +72,26 @@ int main(int argc, char* argv[]) {
  	}
  
 	return EXIT_SUCCESS;
+}
+
+int hostname_to_ip(char * hostname, char * ip) {
+	struct hostent *ptrh;
+    	struct in_addr **addr_list;
+         
+    	// get host info
+	if ( (ptrh = gethostbyname( hostname ) ) == NULL) {
+       	 	perror("gethostbyname error\n");
+        	return -1;
+    	}
+ 
+    	addr_list = (struct in_addr **) ptrh->h_addr_list;
+     
+    	for(int i = 0; addr_list[i] != NULL; i++) {
+        	strcpy(ip , inet_ntoa(*addr_list[i]) );
+        	return 0;
+    	}
+     
+    	return -1;
 }
 
 int recv_file(int sock, char* file_name) {
