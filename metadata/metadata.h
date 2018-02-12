@@ -12,7 +12,7 @@ class metadata{
 	std::string pkg_name;
 	std::string pkg_id;
 	std::vector<std::string> * dep_list;
-	std::hash<std::string> str_hash;
+	std::hash<std::string> * str_hash;
 	int size;
 
 	//Member functions:
