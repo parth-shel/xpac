@@ -110,6 +110,15 @@ void get_file_name(int sock, char* file_name) {
  	}
 
  	sscanf (recv_str, "%s\n", file_name);
+	
+	//TODO: fix file fetching using repo symbol table, this is for debugging purposes only:
+	char * temp = (char *) malloc(128 * sizeof(char));
+	strcpy(temp, "./repo/utkycow/v:1.0/");
+	strcat(temp, file_name);
+	strcpy(file_name, temp);
+	free(temp);
+
+	return;
 }
 
 int send_file(int sock, char *file_name) {
@@ -149,7 +158,7 @@ int send_file(int sock, char *file_name) {
  		close(fd);
  	}
 
- 	printf("flushed %d bytes in %d send(s)\n\n", sent_file_size, sent_count);
+ 	printf("flushed %zu bytes in %d send(s)\n\n", sent_file_size, sent_count);
 	return sent_count;
 }
 

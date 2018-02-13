@@ -104,7 +104,7 @@ int recv_file(int sock, char* file_name) {
 
  	sprintf(send_str, "%s\n", file_name); 
  	send_strlen = strlen(send_str); /* length of message to be transmitted */
- 	if( (sent_bytes = send(sock, file_name, send_strlen, 0)) < 0 ) {
+ 	if( (sent_bytes = send(sock, send_str, send_strlen, 0)) < 0 ) {
  		perror("send error");
  		return -1;
  	}
@@ -130,6 +130,6 @@ int recv_file(int sock, char* file_name) {
  	}
  	
 	close(fd); // close file
- 	printf("Client Received: %d bytes in %d recv(s)\n", rcvd_file_size, recv_count);
+ 	printf("Client Received: %zu bytes in %d recv(s)\n", rcvd_file_size, recv_count);
  	return rcvd_file_size;
 }
