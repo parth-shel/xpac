@@ -110,7 +110,7 @@ int recv_file(int sock, char* file_name) {
  	}
  
  	// create file to save received data.
- 	if ( (fd = open(file_name, O_WRONLY|O_CREAT, 0644)) < 0 ) {
+ 	if ( (fd = open(file_name, O_WRONLY|O_CREAT, 0755)) < 0 ) {
  		perror("error creating file");
  		return -1;
  	}
