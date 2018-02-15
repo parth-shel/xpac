@@ -15,17 +15,28 @@
 #include <signal.h> // signal
 #include <sys/wait.h> // waitpid 
 
+#include "repo.hh" // parse_request, symb
+
 #define SRV_PORT 3702 // default port number
 #define LISTEN_ENQ 5 // for listen backlog
 #define MAX_RECV_BUF 256
 #define MAX_SEND_BUF 256
 
-void get_file_name(int, char*);
+int get_request(int, char*);
 int send_file(int , char*);
 void sig_chld(int);
 
+void init() {
+	if( repo::build_symbol_table("universe_of_packages.csv") < 0 ) {
+		perror("repo failure");
+		exit(EXIT_FAILURE);
+	}
+}
+
 int main(int argc, char* argv[]) {
- 	int listen_fd, conn_fd;
+ 	init();
+
+	int listen_fd, conn_fd;
  	struct sockaddr_in srv_addr, cli_addr;
  	socklen_t cli_len;
  	pid_t child_pid; // pid of child process 
@@ -58,7 +69,7 @@ int main(int argc, char* argv[]) {
  		exit(EXIT_FAILURE);
  	}
  
-	/* install signal handler */
+	// install signal handler
  	signal (SIGCHLD, sig_chld);
 
  	while (true) { // run forever
@@ -79,17 +90,21 @@ int main(int argc, char* argv[]) {
  		if ( (child_pid = fork()) == 0 ) { // fork returns 0 for child
  			close (listen_fd); // close child's copy of listen_fd
  			
-			get_file_name(conn_fd, file_name);
- 			
-			// flush the request file
-			if( send_file(conn_fd, file_name) < 0 ) {
-				perror("transmission error\n");
+			// get request from client and resolve into a file name to send
+			if( get_request(conn_fd, file_name) < 0 ) {
+				perror("request error\n");
+			}
+			else {
+ 				// flush the request file
+				if( send_file(conn_fd, file_name) < 0 ) {
+					perror("transmission error\n");
+				}
 			}
  			
 			printf("closing connection\n");
  			close(conn_fd); // close connected socket
  			
-			_exit(0); // exit child process
+			exit(EXIT_SUCCESS); // exit child process
  		}
  		close(conn_fd); // close parent's copy of conn_fd
  	} // end server loop
@@ -99,26 +114,26 @@ int main(int argc, char* argv[]) {
 	return EXIT_SUCCESS;
 }
 
-void get_file_name(int sock, char* file_name) {
+int get_request(int sock, char* file_name) {
  	char recv_str[MAX_RECV_BUF]; // received string 
- 	ssize_t rcvd_bytes; // bytes received from socket
+ 	char request_str[MAX_RECV_BUF]; // request to parse
+	ssize_t rcvd_bytes; // bytes received from socket
 
- 	// read name of requested file from socket
+ 	// read request from socket
  	if ( (rcvd_bytes = recv(sock, recv_str, MAX_RECV_BUF, 0)) < 0) {
  		perror("recv error\n");
- 		return;
+ 		return -1;
  	}
 
- 	sscanf (recv_str, "%s\n", file_name);
+ 	sscanf (recv_str, "%s\n", request_str);
 	
-	//TODO: fix file fetching using repo symbol table, this is for debugging purposes only:
-	char * temp = (char *) malloc(128 * sizeof(char));
-	strcpy(temp, "./repo/utkycow/v:1.0/");
-	strcat(temp, file_name);
-	strcpy(file_name, temp);
-	free(temp);
+	// parse request and resolve into a file to be flushed
+	if ( repo::parse_request(request_str, file_name) < 0 ) {
+		perror("parse error\n");
+		return -1;
+	}
 
-	return;
+	return 0;
 }
 
 int send_file(int sock, char *file_name) {

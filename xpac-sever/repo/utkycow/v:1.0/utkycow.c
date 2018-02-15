@@ -1,8 +1,8 @@
 #include<stdio.h>
 
-/*-----------------------------------------     |
-| Prints a cow to the terminal			|
-| Author: Utkarsh Jain (utkjain@gmail.com)	|
+/*-----------------------------------------|
+| Prints a cow to the terminal	           |
+| Author: Utkarsh Jain (utkjain@gmail.com) |
 --------------------------------------------*/
 
 /*------------------------------- command to run : utkycow -------------------------------*/
