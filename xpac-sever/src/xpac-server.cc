@@ -15,7 +15,8 @@
 #include <signal.h> // signal
 #include <sys/wait.h> // waitpid 
 
-#include "repo.hh" // parse_request, symb
+#include "repo.hh" // parse_request, symbol table
+#include "server-log.hh" // initialize-log, log-event
 
 #define SRV_PORT 3702 // default port number
 #define LISTEN_ENQ 5 // for listen backlog
@@ -29,6 +30,10 @@ void sig_chld(int);
 void init() {
 	if( repo::build_symbol_table("universe_of_packages.csv") < 0 ) {
 		perror("repo failure");
+		exit(EXIT_FAILURE);
+	}
+	if( log::initialize_log("server.log") < 0 ) {
+		perror("log failure");
 		exit(EXIT_FAILURE);
 	}
 }
@@ -82,7 +87,7 @@ int main(int argc, char* argv[]) {
  			//break; // exit from the server loop
  		}
 
- 		// convert numeric IP to readable format for displaying */
+ 		// convert numeric IP to readable format for displaying
  		inet_ntop(AF_INET, &(cli_addr.sin_addr), print_addr, INET_ADDRSTRLEN);
  		printf("client connected from %s:%d\n", print_addr, ntohs(cli_addr.sin_port) );
  		
