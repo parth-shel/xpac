@@ -19,6 +19,10 @@ class metadata{
 	public:
 	metadata(std::string pkg_name, int size);
 	std::string get_info();
+
+	//Important read and write functions for traversal::w
+ 	std::string write_package();
+	metadata read_package(std::string path);
 };
 
 #endif
