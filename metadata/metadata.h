@@ -4,6 +4,7 @@
 #include<vector>
 #include<string>
 #include<functional>
+#include<fstream>
 
 class metadata{
 
@@ -19,6 +20,8 @@ class metadata{
 	public:
 	metadata(std::string pkg_name, int size);
 	std::string get_info();
+	void write_package(metadata * package,std::string filepath);
+	metadata * get_package(std::string filepath);
 };
 
 #endif
