@@ -7,7 +7,7 @@
 using namespace std;
 
 namespace log {
-	//TODO: initialize log file if it does not exist and record server start time
+	// initialize log file if it does not exist and record server start time
 	extern int initialize_log(const char * file_name) {
 		log_file_name = string(file_name);
 		if(file_exists(file_name)) { // log file exists
@@ -33,12 +33,12 @@ namespace log {
 		return 0;
 	}
 
-	//TODO: record time of request and IP of client
+	// record time of request and IP of client
 	extern int log_event(char * IP, char * request) {
 		if(file_exists(log_file_name.c_str())) {
 			ofstream log_file(log_file_name.c_str(), ios::out | ios::app);
 			if(log_file.is_open()) {
-				log_file << get_current_time() << "\t" << IP << "\t" << request << "\n";
+				log_file << get_current_time() << "\t" << IP << "\t\t" << request << "\n";
 			}
 			else {
 				return -1;
