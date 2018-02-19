@@ -3,49 +3,58 @@
 xpac - A Cross-platform Package Manager
 
 .SH SYNOPSIS
+xpac is one of a kind cross-platform package manager developed and managed by four friends studying Computer Science, as a capstone project for their Software Engineering class at Purdue University
 
 .SH DESCRIPTION
+xpac is build under the GNU License and is thus an open-source software. Listed below are the commands currently in use for xpac 
 
 .SH COMMANDS
 .B xpac install <package_name>
 .br
 Allows the user to install a package, in addition to all of its required dependencies in the user's system
+
 .br
 .B xpac <package_name>
 .br
 Displays the information for the specified package, including its installation status and version, and prompts the user for installation
+
 .br
 .B xpac install --version <package_name>
 .br
 Allows the user to install the specified version of a package, in addition to its required dependencies; extremely useful for backwards compatibility and multiple versioning of software
+
 .br
 .B xpac install --compile <package_name>
 .br
 Allows the user to install a package by fetching its source code and compiling it according to their needs in order to optimize the package
+
 .br
 .B xpac update
 .br
 Fetches the most current and up-to-date listing of all the packages that reside in the universe
+
 .br
 .B xpac upgrade
 .br
 Upgrades all packages and their dependencies, to the most recent version present in the software repository.
+
 .br
 .B xpac list
 .br
 Lists all packages available to be installed from the current universe
+
 .br
 .B xpac remove <package_name>
 .br
 Deletes the specified package and its dependencies which do not serve as dependencies to any other package (referred to as orphans or orphaned packages).
+
 .br
 .B xpac remove --cleanup
 .br
 Deletes the remaining orphaned packages or old dependencies no longer needed by any package; useful for saving space on disk
 
-.SH HISTORY
-
 .SH BUGS
+xpac is currently in development and inintial bugs will be updated once the product is set for its first release.
 
 .SH AUTHORS
 Anunai Ishan,
