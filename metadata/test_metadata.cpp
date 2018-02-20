@@ -9,7 +9,6 @@ int main(){
 	cout<<this_pkg->get_info()<<endl;
 	cout<<"Read package:\n";
 	string filepath = metadata::write_package(this_pkg);
-	cout<<filepath;
 	metadata * read_pkg = metadata::get_package(filepath);
-	//cout<<read_pkg->get_info()<<endl;
+	cout<<read_pkg->get_info()<<endl;
 }

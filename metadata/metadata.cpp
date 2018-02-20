@@ -1,5 +1,5 @@
 #include "metadata.h"
-#include <fstream>
+#include<iostream>
 
 metadata::metadata(std::string pkg_name, int size){
 	this->pkg_name = pkg_name;
@@ -21,9 +21,9 @@ std::string metadata::get_info(){
 std::string metadata::write_package(metadata * package){
 	std::fstream file_object;
 	std::string filepath = package->pkg_id;
-	file_object.open(filepath,std::ios::out|std::ios::app|std::ios::binary);
+	file_object.open(filepath,std::ios::out|std::ios::binary);
 	file_object.write((char*)package,sizeof(package));
-
+	file_object.close();
 	return filepath;
 }
 
@@ -31,7 +31,7 @@ metadata * metadata::get_package(std::string filepath){
 	std::fstream file_object;
 	file_object.open(filepath.c_str(),std::ios::in|std::ios::binary);
 	metadata * package = new metadata();
-	file_object.read((char*)package, sizeof(package));
-
+	file_object.read((char*)package, sizeof(metadata));
+	file_object.close();
 	return package;
 }
