@@ -13,15 +13,18 @@ class metadata{
 	std::string pkg_name;
 	std::string pkg_id;
 	std::vector<std::string> * dep_list;
-	std::hash<std::string> str_hash;
+	std::hash<std::string> * str_hash;
 	int size;
 
 	//Member functions:
 	public:
 	metadata(std::string pkg_name, int size);
+	metadata(): metadata(std::string(""),0) {}
 	std::string get_info();
-	void write_package(metadata * package,std::string filepath);
-	metadata * get_package(std::string filepath);
+
+	//Static functions for basic file io:
+	static std::string write_package(metadata * package);
+	static metadata * get_package(std::string filepath);
 };
 
 #endif

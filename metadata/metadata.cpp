@@ -4,7 +4,8 @@
 metadata::metadata(std::string pkg_name, int size){
 	this->pkg_name = pkg_name;
 	this->size = size;
-	pkg_id = str_hash(pkg_name);
+	this->str_hash = new std::hash<std::string>;
+	pkg_id = std::to_string((*str_hash)(pkg_name));
 	dep_list = new std::vector<std::string>;
 }
 
@@ -17,12 +18,20 @@ std::string metadata::get_info(){
 	return info;
 }
 
-void write_package(metadata * package,std::string filepath){
-	fstream file_object;
-	file_object.open(filepath.c_str(),ios::out|ios::app|ios::binary);
+std::string metadata::write_package(metadata * package){
+	std::fstream file_object;
+	std::string filepath = package->pkg_id;
+	file_object.open(filepath,std::ios::out|std::ios::app|std::ios::binary);
 	file_object.write((char*)package,sizeof(package));
+
+	return filepath;
 }
 
-metadata * metadata::get_package(std::string){
-	return NULL;
+metadata * metadata::get_package(std::string filepath){
+	std::fstream file_object;
+	file_object.open(filepath.c_str(),std::ios::in|std::ios::binary);
+	metadata * package = new metadata();
+	file_object.read((char*)package, sizeof(package));
+
+	return package;
 }
