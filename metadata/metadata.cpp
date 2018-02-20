@@ -1,5 +1,4 @@
 #include "metadata.h"
-#include<iostream>
 
 metadata::metadata(std::string pkg_name, int size){
 	this->pkg_name = pkg_name;
@@ -11,27 +10,33 @@ metadata::metadata(std::string pkg_name, int size){
 
 std::string metadata::get_info(){
 	std::string info;
-	info += "name: " + pkg_name + "\n" + "size: " + std::to_string(size) + "\n" + "id: " + pkg_id + "\n" + "Dependency List: \n";
+	info += pkg_name + "\n" + std::to_string(size) + "\n" + pkg_id + "\n";
 	for(auto && itr=dep_list->begin(); itr!=dep_list->end(); itr++)
-		info += *itr + " ";
-
+		info += *itr+";";
 	return info;
 }
 
 std::string metadata::write_package(metadata * package){
-	std::fstream file_object;
+	std::ofstream file_object;
 	std::string filepath = package->pkg_id;
-	file_object.open(filepath,std::ios::out|std::ios::binary);
-	file_object.write((char*)package,sizeof(package));
+	file_object.open(filepath);
+	file_object << package->get_info();
 	file_object.close();
 	return filepath;
 }
 
 metadata * metadata::get_package(std::string filepath){
-	std::fstream file_object;
-	file_object.open(filepath.c_str(),std::ios::in|std::ios::binary);
+	std::ifstream file_object;
+	file_object.open(filepath.c_str());
 	metadata * package = new metadata();
-	file_object.read((char*)package, sizeof(metadata));
+	std::string line_read_arr[4];
+	std::string next_line;
+	int i = 0;
+	while(getline(file_object,next_line)){
+		line_read_arr[i++] = next_line;
+	}
+	package->pkg_name = line_read_arr[0];
+	package->size = 	
 	file_object.close();
 	return package;
 }
