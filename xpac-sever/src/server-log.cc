@@ -14,17 +14,18 @@ namespace log {
 			ofstream log_file(file_name, ios::out | ios::app);
 			if(log_file.is_open()) {
 				log_file << get_current_time() << "\t---.---.---.---\t\tserver started\n";
+				log_file.close();
 			}
 			else {
 				return -1;
 			}
-
 		}
 		else { // need to create a new file
 			ofstream log_file(file_name, ios::out | ios::trunc);
 			if(log_file.is_open()) {
 				log_file << "TIME\t\t\t\tIP\t\t\tREQUEST\n";
 				log_file << get_current_time() << "\t---.---.---.---\t\tserver started\n";
+				log_file.close();
 			}
 			else {
 				return -1;
@@ -39,6 +40,7 @@ namespace log {
 			ofstream log_file(log_file_name.c_str(), ios::out | ios::app);
 			if(log_file.is_open()) {
 				log_file << get_current_time() << "\t" << IP << "\t\t" << request << "\n";
+				log_file.close();
 			}
 			else {
 				return -1;
@@ -47,6 +49,7 @@ namespace log {
 		else {
 			return -1;
 		}
+		return 0;
 	}
 
 	inline bool file_exists(const char * file_name) {

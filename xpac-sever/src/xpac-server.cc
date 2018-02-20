@@ -16,7 +16,7 @@
 #include <sys/wait.h> // waitpid 
 
 #include "repo.hh" // parse_request, symbol table
-#include "server-log.hh" // initialize-log, log-event
+#include "server-log.hh" // initialize_log, log_event
 
 #define SRV_PORT 3702 // default port number
 #define LISTEN_ENQ 5 // for listen backlog
