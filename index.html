@@ -10,6 +10,13 @@
 
     <!-- Font Awesome CDN -->
     <script src="https://use.fontawesome.com/7dd7da91f0.js"></script>
+    
+    <!-- Google Maps Embed -->
+    <script src="map.js"></script>
+    </script>
+
+    <!-- API Call to Google Maps -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBu-916DdpKAjTmJNIgngS6HL_kDIKU0aU&callback=map"></script>
 
     <title>xpac</title>
     <!-- Custom Script - for displaying tooltip on Font Awesome Icons -->
@@ -20,6 +27,12 @@
     </script>
   </head>
   <body>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
     <h1 class="text-center">xpac</h1>
     <h2 class="text-center h4 text-muted">A Cross-platform Package Manager</h2>
     <div class="container-fluid">
@@ -37,14 +50,7 @@
           Stay in touch for further updates! We'll come out with something soon.
       </p>
     </div>
-
-
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
+    
     <!-- Logo for GitHub repository -->
     <div class="text-center container">
         <div class="lead text-center" style="padding-bottom: 40px">
@@ -53,6 +59,10 @@
             <a href="https://github.com/parth-shel/xpac/" target="_blank"><i class="fa fa-github fa-4x" aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="GitHub"></i></a>
           </div>
       </div>
-  </div>
+    </div>
+    <!-- Google Maps Embed -->
+    <div class="container">
+      <div id="locationMap" style="width:100%;height:450px"></div>
+    </div>
   </body>
 </html>
