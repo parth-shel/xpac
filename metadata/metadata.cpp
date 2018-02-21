@@ -20,7 +20,7 @@ std::string metadata::get_info(){
 std::string metadata::write_package(metadata * package){
 	std::ofstream file_object;
 	std::string filepath = package->pkg_id;
-	file_object.open(filepath.c_str(),std::ios::out | std::ios::binary);
+	file_object.open(filepath.c_str(),std::ios::out | std::ios::binary| std::ios::trunc);
 	file_object.write((char*)package, sizeof(package));
 	file_object.close();
 	return filepath;
@@ -31,7 +31,6 @@ metadata * metadata::get_package(std::string filepath){
 	file_object.open(filepath.c_str(),std::ios::in | std::ios::binary);
 	metadata * new_package = (metadata*)malloc(sizeof(metadata));
 	file_object.read((char*)new_package, sizeof(metadata));
-	new_package->get_info();
 	file_object.close();
 	return new_package;
 }
