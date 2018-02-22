@@ -34,9 +34,14 @@ int main(int argc, char ** argv){
 		command.append(pkg_hash);
 		char * command_to_server = (char*)command.c_str();
 		client_driver(command_to_server,strdup("localhost"));
-	}
-	else if(!strcmp(argv[1],"-remove")){
-		//Deletion code here
+		std::string final_path = std::string("/usr/local/bin/") + std::string(argv[2]); 
+		int mv_res = rename(command_to_server,final_path.c_str());
+		if(mv_res != 0){
+			remove(command_to_server);
+			perror("Error moving file!");
+			exit(1);
+		}
+		printf("Successfully installed %s!\n",argv[2]);
 	}
 	else if(!strcmp(argv[1],"-help")){
 		man_help();
