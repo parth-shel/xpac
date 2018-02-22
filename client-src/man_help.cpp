@@ -23,7 +23,7 @@ void man_help() {
 			string functionality_str = token;
 			
 			// display to standard output
-			printf("%-35s %-100s\n\n", option_str.c_str(), functionality_str.c_str());
+			printf("%-35s %-100s\n", option_str.c_str(), functionality_str.c_str());
 		}
 
 	} else {
