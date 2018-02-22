@@ -10,6 +10,8 @@
 
 std::hash<std::string> str_hash;
 
+extern void man_help();
+
 static inline void print_err(int errflag){
 	if(errflag == 1)	printf("Unknown command; please type xpac -help for help\n");
 	if(errflag == 2)	printf("Wrong number of arguments; please type xpac -help for help\n");
@@ -37,7 +39,7 @@ int main(int argc, char ** argv){
 		//Deletion code here
 	}
 	else if(!strcmp(argv[1],"-help")){
-		//Help code here
+		man_help();
 	}
 	return 0;
 }

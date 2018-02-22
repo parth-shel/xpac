@@ -4,6 +4,7 @@ CFLAGS=-std=c99 -Wall -Wextra -pedantic -o
 CPPFLAGS=-std=c++17 -Wall -Wextra -pedantic -o
 DEBUGFLAGS=-g
 INSTALLDIR=/usr/local/bin
+CPPFILES=client.cpp client_socket.cpp man_help.cpp
 
 all: xpac
 
@@ -11,11 +12,10 @@ clean:
 	-rm xpac
 
 xpac:	client.cpp
-	$(CPP) $(CPPFLAGS) xpac client.cpp client_socket.cpp
+	$(CPP) $(CPPFLAGS) xpac $(CPPFILES)
 
 debug:	
-	$(CPP) $(DEBUGFLAGS) $(CPPFLAGS) xpac client.cpp client_socket.cpp
-
+	$(CPP) $(DEBUGFLAGS) $(CPPFLAGS) xpac $(CPPFILES)
 install:
 	mv xpac $(INSTALLDIR)
 

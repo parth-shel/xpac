@@ -1,6 +1,8 @@
-#include <iostream>
+#include<iostream>
 
-extern void man_help() {
+using namespace std;
+
+void man_help() {
 	cout<<"These are common xpac commands used in various situations:"<<endl<<endl;
 	cout<<"xpac -install <package_name>\t\tInstall a package including its required dependencies"<<endl;
 	cout<<"xpac <package_name>\t\tDisplay package information and prompt user for installation"<<endl;
