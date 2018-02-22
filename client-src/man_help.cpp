@@ -1,17 +1,33 @@
-#include<iostream>
+#include <iostream>
+#include <fstream>
+#include <cstring>
+#include <string>
+#include <sstream>
+#include <stdio.h>
 
 using namespace std;
 
 void man_help() {
-	cout<<"These are common xpac commands used in various situations:"<<endl<<endl;
-	cout<<"xpac -install <package_name>\t\tInstall a package including its required dependencies"<<endl;
-	cout<<"xpac <package_name>\t\tDisplay package information and prompt user for installation"<<endl;
-	cout<<"xpac -install --version <package-name>\t\tInstall specified version of the package for backward compatibility"<<endl;
-	cout<<"xpac -install --compile <package-name>\t\tInstall a package by fetching source code and manually compiling it"<<endl;
-	cout<<"xpac -update\t\tFetch the most current listing of packages available"<<endl;
-	cout<<"xpac -upgrade\t\tUpgrade every installed package and dependencies to most recent version"<<endl;
-	cout<<"xpac -list\t\tList all packages available for installation"<<endl;
-	cout<<"xpac -remove <package-name>\t\tDelete specified package and orphaned packages"<<endl;
-	cout<<"xpac -remove --cleanup\t\tDelete orphaned packages or obsolete dependencies to optimize disk space"<<endl;
+	string line;
+	string token;
+	ifstream help_file("man_help_txt");
+	if(help_file.is_open()) {
+		cout<<"These are common xpac commands used in various situations:"<<endl<<endl;		
+		while(getline(help_file, line)) {	
+			istringstream stream(line);
+			// parse command option
+			getline(stream, token, '|');
+			string option_str = token;
+			// parse functionality
+			getline(stream, token, '\n');
+			string functionality_str = token;
+			
+			// display to standard output
+			printf("%-35s %-100s\n\n", option_str.c_str(), functionality_str.c_str());
+		}
+
+	} else {
+		cout<<"Error accessing xpac -help"<<endl;
+	}
 	return;
 }
