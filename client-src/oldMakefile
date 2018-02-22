@@ -16,12 +16,8 @@ xpac:	client.cpp
 
 debug:	
 	$(CPP) $(DEBUGFLAGS) $(CPPFLAGS) xpac $(CPPFILES)
-
 install:
 	mv xpac $(INSTALLDIR)
-	cp xpac.1 /usr/local/share/man/man1/
-	mandb
 
 uninstall:
 	rm -f $(INSTALLDIR)/xpac
-	rm /usr/local/share/man/man1/xpac.1
