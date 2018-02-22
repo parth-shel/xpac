@@ -17,7 +17,7 @@ namespace repo {
 			return -1;
 		}
 		std::string line;
-		getline(universe_file, line); // skip the first row of .csv
+		getline(universe_file, line); // skip the first row of .csv -- line for schema
 		while(std::getline(universe_file, line)) {
 			std::istringstream iss(line);
 			std::string token;
@@ -27,16 +27,20 @@ namespace repo {
 
 			std::getline(iss, token, ',');
 			std::string package_name = token;
-
+			
 			std::getline(iss, token, ',');
 			std::string package_version = token;
-			
+
+			std::getline(iss, token, ',');
+			std::string executable_name = token;\
+
 			std::string repo_path;
 			repo_path.append("./repo/");
 			repo_path.append(package_name);
 			repo_path.append("/");
 			repo_path.append(package_version);
 			repo_path.append("/");
+			repo_path.append(executable_name);
 
 			symbol_table[PKGID] = repo_path;
 		}
@@ -58,7 +62,7 @@ namespace repo {
 			std::getline(iss, token, '-');
 			unsigned long long PKGID = std::strtoull(token.c_str(), NULL, 0);
 			std::string repo_path = symbol_table[PKGID];
-			repo_path.append("/utkycow");
+			std::cout<<repo_path<<std::endl;
 			std::strcpy(file_name, repo_path.c_str());
 			return 0;
 		}
