@@ -32,7 +32,7 @@ namespace repo {
 			std::string package_version = token;
 
 			std::getline(iss, token, ',');
-			std::string executable_name = token;\
+			std::string executable_name = token;
 
 			std::string repo_path;
 			repo_path.append("./repo/");
