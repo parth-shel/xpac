@@ -14,7 +14,7 @@
 #include <fcntl.h> // open, O_WRONLY, O_CREAT
 #include <unistd.h> // close, write, read
 
-#define SRV_PORT 3702
+#define SRV_PORT 6969
 #define MAX_RECV_BUF 256
 #define MAX_SEND_BUF 256
 

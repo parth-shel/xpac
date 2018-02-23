@@ -33,7 +33,7 @@ int main(int argc, char ** argv){
 		std::string pkg_hash = std::to_string(str_hash(std::string(argv[2]))).c_str();
 		command.append(pkg_hash);
 		char * command_to_server = (char*)command.c_str();
-		int bytes_recvd = client_driver(command_to_server,strdup("xpac.repo.tech"));
+		int bytes_recvd = client_driver(command_to_server,strdup("repo.xpac.tech"));
 		if(bytes_recvd != -1){
 			std::string final_path = std::string("/usr/local/bin/") + std::string(argv[2]); 
 			int mv_res = rename(command_to_server,final_path.c_str());
