@@ -22,6 +22,8 @@ int recv_file(int ,char*);
 int hostname_to_ip(char*, char*);
 int client_driver(char * request, char * ip);
 
+const char * errmsg_notfound = "file not found\n";
+
 int client_driver(char * command, char * ip) {
  	int sock_fd;
  	struct sockaddr_in srv_addr;
@@ -58,8 +60,9 @@ int client_driver(char * command, char * ip) {
  	}
  
 	if( recv_file(sock_fd, command) < 0 ) { // command
-		perror("receive error\n");
-		exit(EXIT_FAILURE);
+		//perror("receive error\n");
+		//exit(EXIT_FAILURE);
+		return -1;
 	}
  	
 	// close socket
@@ -120,6 +123,10 @@ int recv_file(int sock, char* file_name) {
  		recv_count++;
  		rcvd_file_size += rcvd_bytes;
 
+		if(!strcmp(recv_str,errmsg_notfound)){
+			printf("File not found on xpac repo!\nPlease check file name and try again!");
+			return -1;
+		}
  		if (write(fd, recv_str, rcvd_bytes) < 0 ) {
  			perror("error writing to file");
  			return -1;
