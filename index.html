@@ -17,6 +17,28 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
+    <!-- Custom CSS styles -->
+    <style>
+      /* Coloring scheme for Font Awesome icon */
+      a:link {
+        color: #333333;
+      }
+      a:visited {
+        color: #333333;
+      }
+      a:hover {
+        color: #7f7f7f;
+      }
+      a:active {
+        color: #7f7f7f;
+      }
+
+      /*Coloring scheme for button */
+      .btn {
+          color: #333333;
+        }
+    </style>
+
     <title>xpac</title>
     <!-- Custom Script - for displaying tooltip on Font Awesome Icons -->
     <script type="text/javascript">
@@ -44,51 +66,65 @@
       <div class="container">
         <h3>Installation Instructions</h3>
         <p class="lead">Follow the steps in the order given:</p>
-	<p>1. In your terminal, run <code>git clone https://github.com/parth-shel/xpac.git -b prod xpac</code> </p>
-       	<p>2. Open the directory by running <code>cd xpac</code> </p>
-        <p>3. Start installation by running <code>make</code>
-       	<p>4. Complete installation by running <code>sudo make install</code> </p>
-       	<p>5. Enter your password when prompted</p>
+         <p>
+          1. In your terminal, run <code id="download-cmd">git clone https://github.com/parth-shel/xpac.git -b prod xpac</code>.
+          <button type="button" class="btn btn-link btn-small" style="font-size:10px">Copy to clipboard</button>
+        </p>
+        <p>
+          2. Open the directory by running <code id="open-dir-cmd">cd xpac</code>.
+          <button type="button" class="btn btn-link btn-small" style="font-size:10px">Copy to clipboard</button> 
+        </p>
+        <p>3. Start installation by running 
+          <code id="make-cmd">make</code>.
+          <button type="button" class="btn btn-link btn-small" style="font-size:10px">Copy to clipboard</button>
+        </p>
+        <p>4. Complete installation by running 
+          <code id="install-cmd">sudo make install</code>.
+          <button type="button" class="btn btn-link btn-small" style="font-size:10px">Copy to clipboard</button>
+        </p>
+        <p>5. Enter your password when prompted.</p>
         <p class="lead">You are all set!</p>
       </div>
-    </div>
-
-    <div class="container-fluid">
-      <p class=" lead text-center">
-          Follow the development process on GitHub.
-      </p>
     </div>
     
     <!-- Logo for GitHub repository -->
     <div class="text-center container">
-        <div class="lead text-center" style="padding-bottom: 40px">
+        <div class="lead text-center">
           <!-- GitHub -->
           <div>
             <a href="https://github.com/parth-shel/xpac/" target="_blank"><i class="fa fa-github-square fa-4x" aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="GitHub"></i></a>
           </div>
       </div>
     </div>
- 	<div class="lead">
- 		<div id="map" style="width:100%;height:450px;"></div>
- 	</div>
 
- 	<script>
- 	function myMap() {
-	 	var properties= {
-	 	    center:new google.maps.LatLng(40.4277,-86.9170),
-	 	    zoom:17, scrollwheel:false, draggable:false,
+    <div class="container-fluid">
+      <p class=" lead text-center">
+          Follow the development on GitHub.
+      </p>
+    </div>
+  <!--   
+  <div class="lead">
+    <div id="map" style="width:100%;height:450px;"></div>
+  </div>
+ -->
+ <!-- 
+  <script>
+  function myMap() {
+    var properties= {
+        center:new google.maps.LatLng(40.4277,-86.9170),
+        zoom:17, scrollwheel:false, draggable:false,
 
-	 	};
-	 	var map=new google.maps.Map(document.getElementById("map"),properties);
+    };
+    var map=new google.maps.Map(document.getElementById("map"),properties);
 
-	 	var marker = new google.maps.Marker({
-	 	    position: properties.center,
-	 	  });
-	 	 //  marker.setMap(map);
- 	}
- 	</script>
+    var marker = new google.maps.Marker({
+        position: properties.center,
+      });
+     //  marker.setMap(map);
+  }
+  </script>
 
- 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAgUEMhwaRzXZnO8_yrwxbcsB89V-bXUyw&callback=myMap"></script>
-
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAgUEMhwaRzXZnO8_yrwxbcsB89V-bXUyw&callback=myMap"></script>
+ -->
   </body>
 </html>
