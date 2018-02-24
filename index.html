@@ -40,13 +40,13 @@
 
       /* Hide pseudo forms*/
       #hidden {
-        display: none;
+        visibility: none;
       }
     </style>
     <script src="js/copyToClipboard.js"></script>
     <title>xpac</title>
     <!-- Custom Script - for displaying tooltip on Font Awesome Icons -->
-    <script type="text/javascript">
+    <script>
       $(function () {
         $('[data-toggle="tooltip"]').tooltip();
       });
@@ -109,12 +109,14 @@
     </div>
 
     <!-- Pseduo form to copy commands -->
-    <form id="hidden">
-      <input type="text" id="command1" size="50">
-      <input type="text" id="command2" size="50">
-      <input type="text" id="command3" size="50">
-      <input type="text" id="command4" size="50">
-    </form>
+    <div id="hidden">
+      <form>
+        <input type="text" id="command1" size="50">
+        <input type="text" id="command2" size="50">
+        <input type="text" id="command3" size="50">
+        <input type="text" id="command4" size="50">
+      </form>
+    </div>
   <!--   
   <div class="lead">
     <div id="map" style="width:100%;height:450px;"></div>
