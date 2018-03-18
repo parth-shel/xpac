@@ -1,4 +1,4 @@
-goal: xpac-server #test-client
+goal: xpac-server test-client
 
 server=./src/xpac-server.cc
 repo=./src/repo.cc
@@ -13,4 +13,4 @@ test-client: ${test}
 
 clean:
 	rm -f xpac-server
-	#rm -f test-client
+	rm -f test-client

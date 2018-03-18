@@ -58,17 +58,22 @@ namespace repo {
 		std::istringstream iss(request);
 		std::string token;
 		std::getline(iss, token, '-');
-		if(token.compare("GPKG") == 0) {
+		if(token.compare("GPKG") == 0) { // GET PACKAGE
 			std::getline(iss, token, '-');
 			unsigned long long PKGID = std::strtoull(token.c_str(), NULL, 0);
 			std::string repo_path = symbol_table[PKGID];
 			std::strcpy(file_name, repo_path.c_str());
 			return 0;
 		}
-		else if(token.compare("GMDT") == 0) {
+
+		else if(token.compare("GMDT") == 0) { // GET METADATA
 			std::getline(iss, token, '-');
 			unsigned long long PKGID = std::strtoull(token.c_str(), NULL, 0);
 			std::string repo_path = symbol_table[PKGID];
+			while(repo_path.at(repo_path.length() - 1) != '/') {
+				repo_path.erase(repo_path.length() - 1, 1);
+			}
+			repo_path.append(".metadata");
 			std::strcpy(file_name, repo_path.c_str());
 			return 0;
 		}

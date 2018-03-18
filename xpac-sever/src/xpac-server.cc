@@ -18,7 +18,7 @@
 #include "repo.hh" // parse_request, symbol table
 #include "server-log.hh" // initialize_log, log_event
 
-#define SRV_PORT 3702 // default port number
+#define SRV_PORT 5108 // default port number
 #define LISTEN_ENQ 5 // for listen backlog
 #define MAX_RECV_BUF 256
 #define MAX_SEND_BUF 256
