@@ -26,3 +26,4 @@ install:
 uninstall:
 	rm -f $(INSTALLDIR)/xpac
 	rm $(MANPATH)/xpac.1
+	mandb

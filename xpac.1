@@ -1,0 +1,63 @@
+.TH xpac 1 "February 14, 2018" "version 1.0"
+.SH NAME
+xpac - A Cross-platform Package Manager
+
+.SH SYNOPSIS
+xpac is one-of- a-kind cross-platform package manager developed by four students majoring in Computer Science, as a capstone project for their Software Engineering course at Purdue University.
+
+.SH DESCRIPTION
+xpac is built under the GNU License and thus, is an open-source software. The commands presently supported by xpac are listed below: 
+
+.SH COMMANDS
+.B xpac install <package_name>
+.br
+Allows the user to install a package, including the required dependencies in the user's system
+
+.br
+.B xpac <package_name>
+.br
+Displays the information for the package specified, including its installation status and version, and prompts the user for installation
+
+.br
+.B xpac install --version <package_name>
+.br
+Allows the user to install the version of a package specified in the command, including the required dependencies; extremely useful for backwards compatibility and multiple versions of a software
+
+.br
+.B xpac install --compile <package_name>
+.br
+Allows the user to install a package by fetching its source code and compiling it depending on their wants, allowing the user optimity
+
+.br
+.B xpac update
+.br
+Fetches an up-to-date listing of all the packages that reside in the universe
+
+.br
+.B xpac upgrade
+.br
+Upgrades all packages and their dependencies to the most recent version present in the software repository
+
+.br
+.B xpac list
+.br
+Lists all the packages in the current universe available for installation
+
+.br
+.B xpac remove <package_name>
+.br
+Deletes the package specified and its dependencies which do not serve as dependencies to any other package (referred to as orphans or orphaned packages)
+
+.br
+.B xpac remove --cleanup
+.br
+Deletes the orphaned packages or old dependencies no longer needed by any other package; useful for disk space management
+
+.SH BUGS
+xpac is currently under development and bugs will continue to be fixed until the product is set for its first release.
+
+.SH AUTHORS
+Anunai Ishan,
+Adit Kumar,
+Amol Moses Jha,
+Parth Shelgaonkar
