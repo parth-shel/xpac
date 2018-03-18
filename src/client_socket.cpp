@@ -18,6 +18,11 @@
 #define MAX_RECV_BUF 256
 #define MAX_SEND_BUF 256
 
+#define FILE_PER_BIN 755
+#define FILE_PER_MDT 666
+
+extern int file_per_bit;
+
 int recv_file(int ,char*);
 int hostname_to_ip(char*, char*);
 int client_driver(char * request, char * ip);
@@ -109,8 +114,12 @@ int recv_file(int sock, char* file_name) {
  		return -1;
  	}
  
- 	// create file to save received data.
- 	if ( (fd = open(file_name, O_WRONLY|O_CREAT, 0755)) < 0 ) {
+	//Setting file permissions:
+	int file_pers;
+	file_pers = (file_per_bit)?FILE_PER_BIN:FILE_PER_MDT;
+
+ 	// create file to save received data
+ 	if ( (fd = open(file_name, O_WRONLY|O_CREAT, file_pers)) < 0 ) {
  		perror("error creating file");
  		return -1;
  	}
