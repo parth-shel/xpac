@@ -27,7 +27,7 @@ namespace repo {
 
 			std::getline(iss, token, ',');
 			std::string package_name = token;
-			
+
 			std::getline(iss, token, ',');
 			std::string package_version = token;
 
@@ -53,7 +53,7 @@ namespace repo {
 	// TODO: parse request and resolve to a file to be flushed
 	extern int parse_request(char * request, char * file_name) {
 		// TODO: fix file fetching using repo symbol table, this is for debugging purposes only
-		
+
 		std::string request_str = std::string(request);
 		std::istringstream iss(request);
 		std::string token;
@@ -62,11 +62,17 @@ namespace repo {
 			std::getline(iss, token, '-');
 			unsigned long long PKGID = std::strtoull(token.c_str(), NULL, 0);
 			std::string repo_path = symbol_table[PKGID];
-			std::cout<<repo_path<<std::endl;
 			std::strcpy(file_name, repo_path.c_str());
 			return 0;
 		}
-		
+		else if(token.compare("GMDT") == 0) {
+			std::getline(iss, token, '-');
+			unsigned long long PKGID = std::strtoull(token.c_str(), NULL, 0);
+			std::string repo_path = symbol_table[PKGID];
+			std::strcpy(file_name, repo_path.c_str());
+			return 0;
+		}
+
 		std::strcpy(file_name, NULL);
 		return -1;
 	}
