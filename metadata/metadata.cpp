@@ -1,9 +1,10 @@
 #include "metadata.h"
 
-metadata::metadata(std::string pkg_name){
+metadata::metadata(std::string pkg_name,std::string pkg_ver){
 	this->pkg_name = pkg_name;
+	this->pkg_ver = pkg_ver;
 	this->str_hash = new std::hash<std::string>;
-	pkg_id = std::to_string((*str_hash)(pkg_name));
+	pkg_id = std::to_string((*str_hash)(this->pkg_name + this->pkg_ver));
 	dep_list = new std::vector<std::string>;
 }
 
@@ -14,6 +15,10 @@ std::string metadata::get_info(){
 		for(auto && itr=dep_list->begin(); itr!=dep_list->end(); itr++)
 			info += *itr+";";
 	return info;
+}
+
+void metadata::add_dep_pkg(std::string pkg_name){
+				this->dep_list->push_back(pkg_name);
 }
 
 void metadata::write_package(metadata * package){
@@ -28,7 +33,7 @@ void metadata::write_package(metadata * package){
 metadata * metadata::get_package(std::string filepath){
 	std::ifstream file_object;
 	file_object.open(filepath.c_str(),std::ios::in | std::ios::binary);
-	metadata * new_package = (metadata*)malloc(sizeof(metadata));
+	metadata * new_package = new metadata();
 	std::string next_line;
 
 	//Reading the name and the package id of the package to be read:
