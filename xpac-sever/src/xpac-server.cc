@@ -23,7 +23,7 @@
 #define MAX_RECV_BUF 256
 #define MAX_SEND_BUF 256
 
-int get_request(int, char*);
+int get_request(char*, int, char*);
 int send_file(int , char*);
 void sig_chld(int);
 
@@ -90,13 +90,13 @@ int main(int argc, char* argv[]) {
  		// convert numeric IP to readable format for displaying
  		inet_ntop(AF_INET, &(cli_addr.sin_addr), print_addr, INET_ADDRSTRLEN);
  		printf("client connected from %s:%d\n", print_addr, ntohs(cli_addr.sin_port) );
- 		
+
 		// fork a new child process
  		if ( (child_pid = fork()) == 0 ) { // fork returns 0 for child
  			close (listen_fd); // close child's copy of listen_fd
  			
 			// get request from client and resolve into a file name to send
-			if( get_request(conn_fd, file_name) < 0 ) {
+			if( get_request(print_addr, conn_fd, file_name) < 0 ) {
 				perror("request error\n");
 			}
 			else {
@@ -119,7 +119,7 @@ int main(int argc, char* argv[]) {
 	return EXIT_SUCCESS;
 }
 
-int get_request(int sock, char* file_name) {
+int get_request(char * IP, int sock, char* file_name) {
  	char recv_str[MAX_RECV_BUF]; // received string 
  	char request_str[MAX_RECV_BUF]; // request to parse
 	ssize_t rcvd_bytes; // bytes received from socket
@@ -135,7 +135,18 @@ int get_request(int sock, char* file_name) {
 	// parse request and resolve into a file to be flushed
 	if ( repo::parse_request(request_str, file_name) < 0 ) {
 		perror("parse error\n");
+		
+		// log event
+		if( log::log_event(IP, request_str, request_str) < 0 ) {
+			perror("log failure\n");
+		}
+
 		return -1;
+	}
+
+	// log event
+	if( log::log_event(IP, request_str, file_name) < 0 ) {
+		perror("log failure\n");
 	}
 
 	return 0;
