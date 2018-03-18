@@ -29,7 +29,18 @@ metadata * metadata::get_package(std::string filepath){
 	std::ifstream file_object;
 	file_object.open(filepath.c_str(),std::ios::in | std::ios::binary);
 	metadata * new_package = (metadata*)malloc(sizeof(metadata));
-	file_object.read((char*)new_package, sizeof(metadata));
+	std::string next_line;
+
+	//Reading the name and the package id of the package to be read:
+	getline(file_object,next_line);
+	new_package->pkg_name = next_line;
+	getline(file_object,next_line);
+	new_package->pkg_id = next_line;
+
+	while(getline(file_object,next_line)){
+		new_package->dep_list->push_back(next_line);
+	}
+
 	file_object.close();
 	return new_package;
 }
