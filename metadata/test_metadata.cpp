@@ -4,11 +4,9 @@
 using namespace std;
 
 int main(){
-	metadata * this_pkg = new metadata(std::string("test_pkg"),500);
+	metadata * this_pkg = new metadata(std::string("test_pkg"));
 	cout<<"Local package:\n";
 	cout<<this_pkg->get_info()<<endl;
 	cout<<"Read package:\n";
-	string filepath = metadata::write_package(this_pkg);
-	metadata * read_pkg = metadata::get_package(filepath);
-	cout<<read_pkg->get_info()<<endl;
+  metadata::write_package(this_pkg);
 }
