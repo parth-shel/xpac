@@ -14,12 +14,12 @@
 #include <fcntl.h> // open, O_WRONLY, O_CREAT
 #include <unistd.h> // close, write, read
 
-#define SRV_PORT 6969
+#define SRV_PORT 5108
 #define MAX_RECV_BUF 256
 #define MAX_SEND_BUF 256
 
-#define FILE_PER_BIN 755
-#define FILE_PER_MDT 666
+#define FILE_PER_BIN 0755
+#define FILE_PER_MDT 0666
 
 extern int file_per_bit;
 

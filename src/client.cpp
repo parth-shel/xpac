@@ -6,7 +6,11 @@
 #include<iostream>
 #include<string.h>
 #include<functional>
+#include<sys/stat.h>
+#include<sys/types.h>
 #include<string>
+
+#include "metadata.h"
 
 //Global variables and extern functions:
 std::hash<std::string> str_hash;
@@ -21,7 +25,6 @@ static inline void print_err(int errflag){
 	if(errflag == 2)	printf("Wrong number of arguments; please type xpac -help for help\n");
 }
 
-
 int main(int argc, char ** argv){
 	if(argc<2){
 		print_err(1);
@@ -33,12 +36,26 @@ int main(int argc, char ** argv){
 			exit(1);
 		}
 
+		//Creating a directory with the needed files:
+		mkdir(argv[2], 0755);
+
 		//Getting metadata first:
 		std::string command = std::string("GMDT-");
 		file_per_bit = 0;
 		std::string pkg_hash = std::to_string(str_hash(std::string(argv[2]))).c_str();
+		command.append(pkg_hash);
 		char * command_to_server = (char*)command.c_str();
 		int bytes_recvd = client_driver(command_to_server,strdup("localhost"));
+
+		metadata * new_package;
+
+		if(bytes_recvd != -1){ 
+						std::string final_path = std::string(argv[2]) + std::string("/") + std::string(".metadata");
+						new_package = metadata::get_package(final_path.c_str());
+						std::cout<<new_package->get_info();
+						rename(command_to_server,final_path.c_str());
+		}
+		remove(command_to_server);
 
 		//Getting the binary itself
 		command = std::string("GPKG-");
@@ -46,6 +63,12 @@ int main(int argc, char ** argv){
 		command.append(pkg_hash);
 		command_to_server = (char*)command.c_str();
 		bytes_recvd = client_driver(command_to_server,strdup("localhost"));
+
+		if(bytes_recvd != -1) {
+						std::string final_path = std::string(argv[2]) + std::string("/") + std::string(argv[2]);
+						rename(command_to_server, final_path.c_str());
+		}
+		remove(command_to_server);
 
 		/*
 		if(bytes_recvd != -1){
