@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
 	cout << "Enter package ID: ";
 	cin >> pkg_ID;
 
-	cout << "Enter package ID's of dependencies (enter '-1' when you're done): ";
+	cout << "Enter package ID's of dependencies (enter '-1' when you're done): " << endl;
 	while(buf.compare("-1") != 0) {
 		cin >> buf;
 		if(buf.compare("-1") != 0)
