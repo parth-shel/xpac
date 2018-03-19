@@ -4,6 +4,15 @@
 
 using namespace std;
 
+inline bool file_exists(string file_name) {
+	fstream fs(file_name.c_str());
+	return fs.good();
+}
+
+unsigned long long get_pkg_id(string pkg_name, string pkg_version) {
+	return str_hash(pkg_name.c_str());
+}
+
 int main(int argc, char* argv[]) {
 	string pkg_name;
 	string pkg_version;
@@ -12,48 +21,24 @@ int main(int argc, char* argv[]) {
 	cout << "Enter package name: ";
 	cin >> pkg_name;
 
-	cout << "Enter the version number of the package";
+	cout << "Enter version: ";
 	cin >> pkg_version;
 
-	cout << "Please enter the executable name";
-	cin >> execName;	
+	cout << "Enter executable file: ";
+	cin >> pkg_exe;	
+	
+	string universe;
+	universe.append("universe_of_packages.csv");
 
+	if(file_exists(universe)) {
+		ofstream uni_file(universe.c_str(), ios::out | ios::app);
 
+		unifile << get_pkg_id(pkg_name, pkg_version) << "," << pkg_name << "," << pkd_version << "," << pkg_exe << endl;
+	}
+
+	else {
+		return EXIT_FAILURE;
+	}
+	
 	return EXIT_SUCCESS;
 }
-
-int initialize_universe (const char * file_name) {
-
-	if (file_exists(file_name)) { // log file exists
-		ofstream log_file(file_name, ios::out | ios::app);
-
-		if(log_file.is_open()) {
-			log_file.close();
-		}
-
-		else {
-			return -1;
-		}
-	}
-
-	else { // need to create a new file
-		ofstream log_file(file_name, ios::out | ios::trunc);
-
-		if (log_file.is_open()) {
-			log_file << "TIME\t\t\t\tIP\t\t\tREQUEST\n";
-			log_file.close();
-		}
-
-		else {
-			return -1;
-		}			
-	}
-
-	return 0;
-}
-
-inline bool file_exists(const char * file_name) {
-	ifstream f(file_name);
-	return f.good();
-}
-
