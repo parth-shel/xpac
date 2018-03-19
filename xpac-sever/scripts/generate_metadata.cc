@@ -48,6 +48,7 @@ int main(int argc, char* argv[]) {
 		}
 		meta_file << endl;
 	}
+	meta_file.close();
 
 	return EXIT_SUCCESS;
 }

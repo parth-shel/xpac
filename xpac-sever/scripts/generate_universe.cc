@@ -1,3 +1,4 @@
+#include <functional>
 #include <iostream>
 #include <fstream>
 #include <stdlib.h>
@@ -9,8 +10,9 @@ inline bool file_exists(string file_name) {
 	return fs.good();
 }
 
-unsigned long long get_pkg_id(string pkg_name, string pkg_version) {
-	return str_hash(pkg_name.c_str());
+string get_pkg_id(string pkg_name, string pkg_version) {
+	hash<string> str_hash;
+	return to_string(str_hash(pkg_name));
 }
 
 int main(int argc, char* argv[]) {
@@ -33,11 +35,20 @@ int main(int argc, char* argv[]) {
 	if(file_exists(universe)) {
 		ofstream uni_file(universe.c_str(), ios::out | ios::app);
 
-		unifile << get_pkg_id(pkg_name, pkg_version) << "," << pkg_name << "," << pkd_version << "," << pkg_exe << endl;
+		if(uni_file.is_open()) {
+		uni_file << get_pkg_id(pkg_name, pkg_version) << "," << pkg_name << "," << pkg_version << "," << pkg_exe << endl;
+		uni_file.close();
+		}
 	}
 
 	else {
-		return EXIT_FAILURE;
+		ofstream uni_file(universe.c_str(), ios::out | ios::trunc);
+
+		if(uni_file.is_open()) {
+			uni_file << "PKGID,Package Name,Version,Executable Name\n";
+			uni_file << get_pkg_id(pkg_name, pkg_version) << "," << pkg_name << "," << pkg_version << "," << pkg_exe << endl;
+		uni_file.close();
+		}
 	}
 	
 	return EXIT_SUCCESS;
