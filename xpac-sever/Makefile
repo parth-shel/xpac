@@ -16,9 +16,11 @@ test-client: ${test}
 generate-universe: ${universe}
 	g++ -g -std=c++17 -o generate-universe ${universe}
 
-genrate-metadata: ${metadata}
+generate-metadata: ${metadata}
 	g++ -g -std=c++17 -o generate-metadata ${metadata}
 
 clean:
 	rm -f xpac-server
 	rm -f test-client
+	rm -f generate-universe
+	rm -f generate-metadata

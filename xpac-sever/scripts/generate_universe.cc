@@ -1,39 +1,33 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <string>
+#include <iostream>
+#include <fstream>
 #include <stdlib.h>
-#include <iostream.h>
-#include <fstream.h>
 
 using namespace std;
 
-int main() {
-	string name;
-	string version;
-	string execName;
+int main(int argc, char* argv[]) {
+	string pkg_name;
+	string pkg_version;
+	string pkg_exe;
 
-	cout << "Please enter the name of the package";
-	cin >> name;
+	cout << "Enter package name: ";
+	cin >> pkg_name;
 
-	cout << "Please enter the version number of the package";
-	cin >> version;
+	cout << "Enter the version number of the package";
+	cin >> pkg_version;
 
 	cout << "Please enter the executable name";
 	cin >> execName;	
 
-	initialize_universe("universe_of_packages.csv");
 
 	return EXIT_SUCCESS;
 }
 
-extern int initialize_universe (const char * file_name) {
-	log_file_name = string(file_name);
+int initialize_universe (const char * file_name) {
 
 	if (file_exists(file_name)) { // log file exists
 		ofstream log_file(file_name, ios::out | ios::app);
 
 		if(log_file.is_open()) {
-			log_file << get_current_time() << "\t---.---.---.---\t\tserver started\n";
 			log_file.close();
 		}
 
@@ -47,7 +41,6 @@ extern int initialize_universe (const char * file_name) {
 
 		if (log_file.is_open()) {
 			log_file << "TIME\t\t\t\tIP\t\t\tREQUEST\n";
-			log_file << get_current_time() << "\t---.---.---.---\t\tserver started\n";
 			log_file.close();
 		}
 
