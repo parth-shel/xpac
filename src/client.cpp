@@ -20,6 +20,26 @@ int file_per_bit = 0;				//0 for read/write file; 1 for executable
 extern void man_help();
 extern int client_driver(char * request, char * ip);
 
+static inline void move_to_folder(char * command_to_server, char * pkg_name , char * append){
+	std::string final_path = std::string(pkg_name) + std::string("/") + std::string(append);
+	rename(command_to_server,final_path.c_str());
+}
+
+static inline void get_from_server(char * command_to_server, char * pkg_name){
+	std::string command = std::string(command_to_server);
+	file_per_bit = 0;
+	std::string pkg_hash = std::to_string(str_hash(std::string(pkg_name))).c_str();
+	command.append(pkg_hash);
+	char * final_command_to_server = (char*)command.c_str();
+	int bytes_recvd = client_driver(final_command_to_server,strdup("localhost"));
+	/*
+	if(bytes_recvd != 0){
+		if(!strcmp(command_to_server,"GMDT-"))	move_to_folder(final_command_to_server,pkg_name, ".metadata");
+		else if(!strcmp(command_to_server,"GPKG-"))	move_to_folder(final_command_to_server,pkg_name, pkg_name);
+	}
+	remove(final_command_to_server);*/
+}
+
 static inline void print_err(int errflag){
 	if(errflag == 1)	printf("Unknown command; please type xpac -help for help\n");
 	if(errflag == 2)	printf("Wrong number of arguments; please type xpac -help for help\n");
@@ -39,37 +59,13 @@ int main(int argc, char ** argv){
 		//Creating a directory with the needed files:
 		mkdir(argv[2], 0755);
 
-		//Getting metadata first:
-		std::string command = std::string("GMDT-");
-		file_per_bit = 0;
-		std::string pkg_hash = std::to_string(str_hash(std::string(argv[2]))).c_str();
-		command.append(pkg_hash);
-		char * command_to_server = (char*)command.c_str();
-		int bytes_recvd = client_driver(command_to_server,strdup("localhost"));
-
-		metadata * new_package;
-
-		if(bytes_recvd != -1){ 
-						std::string final_path = std::string(argv[2]) + std::string("/") + std::string(".metadata");
-						new_package = metadata::get_package(final_path.c_str());
-						std::cout<<new_package->get_info();
-						rename(command_to_server,final_path.c_str());
-		}
-		remove(command_to_server);
+		//Getting the metadata for the package:
+		get_from_server("GMDT-",argv[2]);
 
 		//Getting the binary itself
-		command = std::string("GPKG-");
 		file_per_bit = 1;
-		command.append(pkg_hash);
-		command_to_server = (char*)command.c_str();
-		bytes_recvd = client_driver(command_to_server,strdup("localhost"));
-
-		if(bytes_recvd != -1) {
-						std::string final_path = std::string(argv[2]) + std::string("/") + std::string(argv[2]);
-						rename(command_to_server, final_path.c_str());
-		}
-		remove(command_to_server);
-
+		get_from_server("GPKG-",argv[2]);
+		
 		/*
 		if(bytes_recvd != -1){
 			std::string final_path = std::string("/usr/local/bin/") + std::string(argv[2]); 

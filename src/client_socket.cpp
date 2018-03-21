@@ -116,7 +116,7 @@ int recv_file(int sock, char* file_name) {
  
 	//Setting file permissions:
 	int file_pers;
-	file_pers = (file_per_bit)?FILE_PER_BIN:FILE_PER_MDT;
+	file_pers = (file_per_bit == 1)?FILE_PER_BIN:FILE_PER_MDT;
 
  	// create file to save received data
  	if ( (fd = open(file_name, O_WRONLY|O_CREAT, file_pers)) < 0 ) {
