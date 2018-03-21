@@ -82,7 +82,7 @@ namespace repo {
 			}
 		}
 
-		std::strcpy(file_name, NULL);
+		//std::strcpy(file_name, NULL);
 		return -1;
 	}
 }

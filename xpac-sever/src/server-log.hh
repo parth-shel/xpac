@@ -10,6 +10,8 @@ namespace log {
 
 	extern int log_event(char * IP, char * request);
 	
+	extern int log_event(char * IP, char * request, char * resolved_file);
+	
 	inline bool file_exists(const char * file_name);
 
 	inline std::string get_current_time();
