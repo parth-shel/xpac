@@ -26,23 +26,26 @@ static inline void move_to_folder(char * command_to_server, char * pkg_name , ch
 }
 
 static inline void get_from_server(char * command_to_server, char * pkg_name){
+
 	std::string command = std::string(command_to_server);
-	file_per_bit = 0;
 	std::string pkg_hash = std::to_string(str_hash(std::string(pkg_name))).c_str();
 	command.append(pkg_hash);
 	char * final_command_to_server = (char*)command.c_str();
 	int bytes_recvd = client_driver(final_command_to_server,strdup("localhost"));
-	/*
-	if(bytes_recvd != 0){
-		if(!strcmp(command_to_server,"GMDT-"))	move_to_folder(final_command_to_server,pkg_name, ".metadata");
-		else if(!strcmp(command_to_server,"GPKG-"))	move_to_folder(final_command_to_server,pkg_name, pkg_name);
-	}
-	remove(final_command_to_server);*/
+
+	//Moving the files to the correct directory:
+	if(!strcmp(command_to_server,"GMDT-"))		move_to_folder(final_command_to_server,pkg_name,".metadata");
+	else if(!strcmp(command_to_server,"GPKG-"))	move_to_folder(final_command_to_server,pkg_name,pkg_name);
+	remove(final_command_to_server);
 }
 
 static inline void print_err(int errflag){
 	if(errflag == 1)	printf("Unknown command; please type xpac -help for help\n");
 	if(errflag == 2)	printf("Wrong number of arguments; please type xpac -help for help\n");
+}
+
+static inline metadata * build_package(){
+
 }
 
 int main(int argc, char ** argv){
@@ -65,22 +68,12 @@ int main(int argc, char ** argv){
 		//Getting the binary itself
 		file_per_bit = 1;
 		get_from_server("GPKG-",argv[2]);
+
+
+
+
+		//TODO: INSTALLATION NEEDS TO WORK AGAIN!
 		
-		/*
-		if(bytes_recvd != -1){
-			std::string final_path = std::string("/usr/local/bin/") + std::string(argv[2]); 
-			int mv_res = rename(command_to_server,final_path.c_str());
-			if(mv_res != 0){
-				remove(command_to_server);
-				perror("Error moving file!");
-				exit(1);
-			}
-			printf("Successfully installed %s!\n",argv[2]);
-		}
-		else{
-			remove(command_to_server);
-			exit(1);
-		}*/
 	}
 	else if(!strcmp(argv[1],"-help")){
 		man_help();
