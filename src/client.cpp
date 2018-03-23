@@ -20,8 +20,13 @@ int file_per_bit = 0;				//0 for read/write file; 1 for executable
 extern void man_help();
 extern int client_driver(char * request, char * ip);
 
+std::string metadata_path;
+std::string package_path;
+
 static inline void move_to_folder(char * command_to_server, char * pkg_name , char * append){
 	std::string final_path = std::string(pkg_name) + std::string("/") + std::string(append);
+	if(!strcmp(append,".metadata"))		metadata_path = std::string(final_path);
+	else					package_path = std::string(final_path);
 	rename(command_to_server,final_path.c_str());
 }
 
@@ -44,9 +49,6 @@ static inline void print_err(int errflag){
 	if(errflag == 2)	printf("Wrong number of arguments; please type xpac -help for help\n");
 }
 
-static inline metadata * build_package(){
-
-}
 
 int main(int argc, char ** argv){
 	if(argc<2){
@@ -69,8 +71,14 @@ int main(int argc, char ** argv){
 		file_per_bit = 1;
 		get_from_server("GPKG-",argv[2]);
 
+		//Building the package here:
+		metadata * package = metadata::get_package(metadata_path.c_str());
+		std::vector<std::string> * dep_list = package->get_dep_list();
 
-
+		//Iterating through the dependency list here:
+		for(auto itr=dep_list->begin(); itr!=dep_list->end(); itr++){
+			std::cout<<"Dependecy: "<<*itr<<std::endl;
+		}
 
 		//TODO: INSTALLATION NEEDS TO WORK AGAIN!
 		

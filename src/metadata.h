@@ -20,6 +20,7 @@ class metadata{
 	public:
 	metadata(std::string pkg_name, std::string pkg_ver);
 	metadata(): metadata(std::string(""),std::string("")) {}
+	std::vector<std::string> * get_dep_list();
 	std::string get_info();
 
 	//Static functions for basic file io:

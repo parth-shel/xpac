@@ -17,8 +17,14 @@ std::string metadata::get_info(){
 	return info;
 }
 
+
+//For debugging purposes only:
 void metadata::add_dep_pkg(std::string pkg_name){
-				this->dep_list->push_back(pkg_name);
+	this->dep_list->push_back(pkg_name);
+}
+
+std::vector<std::string> * metadata::get_dep_list(){
+	return this->dep_list;
 }
 
 void metadata::write_package(metadata * package){
@@ -49,3 +55,4 @@ metadata * metadata::get_package(std::string filepath){
 	file_object.close();
 	return new_package;
 }
+
