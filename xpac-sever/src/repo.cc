@@ -4,8 +4,14 @@
 #include <fstream>
 #include <sstream>
 #include <map>
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
 
 #include "repo.hh"
+
+struct passwd *pw = getpwuid(getuid());
+const char *homedir = pw->pw_dir;
 
 namespace repo {
 	std::map<unsigned long long, std::string>symbol_table;
@@ -34,8 +40,8 @@ namespace repo {
 			std::getline(iss, token, ',');
 			std::string executable_name = token;
 
-			std::string repo_path;
-			repo_path.append("./repo/");
+			std::string repo_path = std::string(homedir) ;
+			repo_path.append("/repo/");
 			repo_path.append(package_name);
 			repo_path.append("/");
 			repo_path.append(package_version);
