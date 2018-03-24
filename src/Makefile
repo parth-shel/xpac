@@ -1,7 +1,7 @@
 CC=gcc
 CPP=g++
 CFLAGS=-std=c99 -Wall -Wextra -pedantic -o
-CPPFLAGS=-std=c++17 -Wall -Wextra -pedantic -o
+CPPFLAGS=-std=c++11 -Wall -Wextra -pedantic -o
 DEBUGFLAGS=-g
 INSTALLDIR=/usr/local/bin
 MANPATH=/usr/share/man/man1
