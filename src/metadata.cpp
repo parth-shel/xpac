@@ -49,7 +49,7 @@ metadata * metadata::get_package(std::string filepath){
 	new_package->pkg_id = next_line;
 
 	while(getline(file_object,next_line)){
-		new_package->dep_list->push_back(next_line);
+		if(next_line.compare(std::string("")))	new_package->dep_list->push_back(next_line);	//Should not push empty strings
 	}
 
 	file_object.close();

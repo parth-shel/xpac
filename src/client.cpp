@@ -9,26 +9,18 @@
 #include<sys/stat.h>
 #include<sys/types.h>
 #include<string>
+#include<cstdlib>
 
 #include "metadata.h"
 
 //Global variables and extern functions:
 std::hash<std::string> str_hash;
 
-int file_per_bit = 0;				//0 for read/write file; 1 for executable
-
 extern void man_help();
 extern int client_driver(char * request, char * ip);
 
 std::string metadata_path;
-std::string package_path;
-
-static inline void move_to_folder(char * command_to_server, char * pkg_name , char * append){
-	std::string final_path = std::string(pkg_name) + std::string("/") + std::string(append);
-	if(!strcmp(append,".metadata"))		metadata_path = std::string(final_path);
-	else					package_path = std::string(final_path);
-	rename(command_to_server,final_path.c_str());
-}
+std::string install_path;
 
 static inline void get_from_server(char * command_to_server, char * pkg_name){
 
@@ -36,12 +28,16 @@ static inline void get_from_server(char * command_to_server, char * pkg_name){
 	std::string pkg_hash = std::to_string(str_hash(std::string(pkg_name))).c_str();
 	command.append(pkg_hash);
 	char * final_command_to_server = (char*)command.c_str();
-	int bytes_recvd = client_driver(final_command_to_server,strdup("localhost"));
-
-	//Moving the files to the correct directory:
-	if(!strcmp(command_to_server,"GMDT-"))		move_to_folder(final_command_to_server,pkg_name,".metadata");
-	else if(!strcmp(command_to_server,"GPKG-"))	move_to_folder(final_command_to_server,pkg_name,pkg_name);
+	client_driver(final_command_to_server,strdup("repo.xpac.tech"));
+	
+	//To untar the recieved file:
+	std::string untar_str = std::string("tar -xvf ") + std::string(final_command_to_server);
+	system(untar_str.c_str());
 	remove(final_command_to_server);
+
+	//Setting metadata and install_paths
+	metadata_path = std::string(pkg_name) + std::string("/.metadata");
+	install_path = std::string(pkg_name) + std::string("/.install_script");
 }
 
 static inline void print_err(int errflag){
@@ -61,27 +57,24 @@ int main(int argc, char ** argv){
 			exit(1);
 		}
 
-		//Creating a directory with the needed files:
-		mkdir(argv[2], 0755);
-
 		//Getting the metadata for the package:
-		get_from_server("GMDT-",argv[2]);
+		//get_from_server("GMDT-",argv[2]);
 
 		//Getting the binary itself
-		file_per_bit = 1;
 		get_from_server("GPKG-",argv[2]);
 
 		//Building the package here:
 		metadata * package = metadata::get_package(metadata_path.c_str());
 		std::vector<std::string> * dep_list = package->get_dep_list();
 
-		//Iterating through the dependency list here:
 		for(auto itr=dep_list->begin(); itr!=dep_list->end(); itr++){
-			std::cout<<"Dependecy: "<<*itr<<std::endl;
+			//TODO: DEPENDECY LIST HERE:
 		}
 
-		//TODO: INSTALLATION NEEDS TO WORK AGAIN!
-		
+		//Installing the main package here itself:
+		system(install_path.c_str());
+
+		//TODO: MOVE TO XPAC's FOLDERS:
 	}
 	else if(!strcmp(argv[1],"-help")){
 		man_help();
