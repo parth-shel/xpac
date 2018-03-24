@@ -8,16 +8,16 @@ universe=./scripts/generate_universe.cc
 metadata=./scripts/generate_metadata.cc
 
 xpac-server: ${server} ${repo} ${log}	
-	g++ -g -std=c++17 -o xpac-server ${server} ${repo} ${log}
+	g++ -g -std=c++11 -o xpac-server ${server} ${repo} ${log}
 
 test-client: ${test}
-	g++ -g -std=c++17 -o test-client ${test}
+	g++ -g -std=c++11 -o test-client ${test}
 
 generate-universe: ${universe}
-	g++ -g -std=c++17 -o generate-universe ${universe}
+	g++ -g -std=c++11 -o generate-universe ${universe}
 
 generate-metadata: ${metadata}
-	g++ -g -std=c++17 -o generate-metadata ${metadata}
+	g++ -g -std=c++11 -o generate-metadata ${metadata}
 
 clean:
 	rm -f xpac-server
