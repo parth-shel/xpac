@@ -10,6 +10,9 @@
 #include<sys/types.h>
 #include<string>
 #include<cstdlib>
+#include<stack>
+#include<queue>
+#include<unordered_set>
 
 #include "metadata.h"
 
@@ -22,7 +25,11 @@ extern int client_driver(char * request, char * ip);
 std::string metadata_path;
 std::string install_path;
 
-static inline void get_from_server(char * command_to_server, char * pkg_name){
+std::stack<std::string> dep_list;
+std::queue<std::string> bfs_queue;
+std::unordered_set<std::string> marked;
+
+static inline void get_from_server(const char * command_to_server,const char * pkg_name){
 
 	std::string command = std::string(command_to_server);
 	std::string pkg_hash = std::to_string(str_hash(std::string(pkg_name))).c_str();
@@ -32,7 +39,7 @@ static inline void get_from_server(char * command_to_server, char * pkg_name){
 	
 	//To untar the recieved file:
 	std::string untar_str = std::string("tar -xvf ") + std::string(final_command_to_server);
-	system(untar_str.c_str());
+	//system(untar_str.c_str());
 	remove(final_command_to_server);
 
 	//Setting metadata and install_paths
@@ -45,6 +52,56 @@ static inline void print_err(int errflag){
 	if(errflag == 2)	printf("Wrong number of arguments; please type xpac -help for help\n");
 }
 
+static void install_all_packages(){
+	while(!dep_list.empty()){
+		//TODO: Substitute parth's build engine here:
+		std::string to_install = dep_list.top();
+		dep_list.pop();
+	}
+
+}
+
+static void install_package(const char * pkg_name){
+	//Getting the package from the server itself:
+	get_from_server("GPKG-",pkg_name);
+
+	//Working on the dependencies:
+	metadata * package = metadata::get_package(metadata_path.c_str());
+
+	//Pushing the install path onto the stack:
+	dep_list.push(install_path);
+
+	//Initializing the bfs queue:
+	marked.insert(std::string(pkg_name));
+	bfs_queue.push(std::string(pkg_name));
+	
+	while(!bfs_queue.empty()){
+
+		std::string next = bfs_queue.front();
+		bfs_queue.pop();
+
+
+		if(next.compare(std::string(pkg_name)) != 0){
+			get_from_server("GPKG-",next.c_str());
+			package = metadata::get_package(metadata_path.c_str());
+			dep_list.push(install_path);
+		}
+
+		std::vector<std::string> * curr_dep_list = package->get_dep_list();
+
+		for(auto itr = curr_dep_list->begin(); itr!=curr_dep_list->end(); itr++){
+			auto found = marked.find(*itr);
+			if(found == marked.end()){	//Not found
+				marked.insert(*itr);
+				bfs_queue.push(*itr);
+			}
+		}
+
+	}
+
+	//Finally installing everything in the stack:
+	install_all_packages();
+}
 
 int main(int argc, char ** argv){
 	if(argc<2){
@@ -57,24 +114,10 @@ int main(int argc, char ** argv){
 			exit(1);
 		}
 
-		//Getting the metadata for the package:
-		//get_from_server("GMDT-",argv[2]);
+		char * pkg_name = strdup(argv[2]);
 
-		//Getting the binary itself
-		get_from_server("GPKG-",argv[2]);
-
-		//Building the package here:
-		metadata * package = metadata::get_package(metadata_path.c_str());
-		std::vector<std::string> * dep_list = package->get_dep_list();
-
-		for(auto itr=dep_list->begin(); itr!=dep_list->end(); itr++){
-			//TODO: DEPENDECY LIST HERE:
-		}
-
-		//Installing the main package here itself:
-		system(install_path.c_str());
-
-		//TODO: MOVE TO XPAC's FOLDERS:
+		//Installing the package:
+		install_package(pkg_name);
 	}
 	else if(!strcmp(argv[1],"-help")){
 		man_help();
