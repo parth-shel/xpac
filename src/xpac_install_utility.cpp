@@ -41,17 +41,6 @@ void parse_universe_of_packages(string filename) {
 			getline(stream, token, '\n');
 		} 
 	} else {
-		cout<<"File not found"<<endl;
+		cout<<"Latest updates are not found! Please run xpac -update your local package database!"<<endl;
 	}
 }
-
-/*
-int main(int argc, char ** argv) {
-	if(argc < 1) {
-		cout<<"Usage: xpac_install_utility <universe_of_packages>"<<endl;
-	}
-	string filename = string(argv[1]);
-	parse_universe_of_packages(filename);
-	print_package_set();
-	return 1;
-}*/
