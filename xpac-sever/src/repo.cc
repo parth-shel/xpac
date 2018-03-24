@@ -83,7 +83,7 @@ namespace repo {
 		}*/
 
 		else if(token.compare("GUNI") == 0) {
-			std::string universe_path("./universe_of_packages");
+			std::string universe_path("./universe_of_packages.csv");
 			std::strcpy(file_name, universe_path.c_str());
 			return 0;
 		}
