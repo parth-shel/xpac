@@ -15,9 +15,16 @@
 #include<unordered_set>
 #include<unistd.h>
 #include<sys/types.h>
+#include <dirent.h>
 #include<pwd.h>
 
 #include "metadata.h"
+
+//Initializing the home directory, and the users xpac directory:
+struct passwd *pw = getpwuid(getuid());
+const char *homedir = pw->pw_dir;
+std::string xpac_dir = std::string(homedir) + std::string("/.xpac/");
+std::string universe_file = xpac_dir + std::string("universe_of_packages.csv");
 
 //Global variables and extern functions:
 std::hash<std::string> str_hash;
@@ -36,6 +43,19 @@ std::string install_path;
 std::stack<std::string> dep_list;
 std::queue<std::string> bfs_queue;
 std::unordered_set<std::string> marked;
+
+static inline void xpac_dir_handler(){
+	DIR* dir = opendir(xpac_dir.c_str());
+	if (dir)
+	{
+		closedir(dir);  //Directory exists and we don't need to so anything
+	}
+	else if (ENOENT == errno)
+	{
+		/* Directory does not exist. So we need to create it */
+		mkdir(xpac_dir.c_str(),0775);
+	}
+}
 
 static inline void get_from_server(const char * command_to_server,const char * pkg_name){
 
@@ -122,14 +142,8 @@ int main(int argc, char ** argv){
 	}
 
 	//Initializing:
-	struct passwd *pw = getpwuid(getuid());
-	const char *homedir = pw->pw_dir;
-	
-	std::string xpac_dir = std::string(homedir) + std::string("/.xpac/universe_of_packages.csv");
-
-	std::cout<<xpac_dir<<std::endl;
-
-	parse_universe_of_packages(std::string(xpac_dir));
+	xpac_dir_handler();
+	parse_universe_of_packages(universe_file);
 
 	if(!strcmp(argv[1],"-install")){
 		if(argc<3){

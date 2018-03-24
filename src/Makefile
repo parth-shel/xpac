@@ -20,9 +20,11 @@ debug:
 
 install:
 	mv xpac $(INSTALLDIR)
-	#cp xpac.1 $(MANPATH)
+	cp man_help_txt $(INSTALLDIR) 
+	cp xpac.1 $(MANPATH)
 	mandb
 
 uninstall:
 	rm -f $(INSTALLDIR)/xpac
+	rm -f $(INSTALLDIR)/man_help_txt
 	rm $(MANPATH)/xpac.1
