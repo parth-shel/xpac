@@ -8,9 +8,9 @@
 
 using namespace std;
 
-static unordered_set<string> universe_list;
+unordered_set<string> universe_list;
 
-void parse_universe_of_packages(string);
+void parse_universe_of_packages(string, int);
 void print_package_set();
 
 void print_package_set() {
@@ -19,7 +19,7 @@ void print_package_set() {
 	}
 }
 
-void parse_universe_of_packages(string filename) {
+void parse_universe_of_packages(string filename, int flag) {
 	// assuming relative filepath
 	// file resides in same directory as xpac_install_utility executable
 	// change accordingly to the needs
@@ -41,6 +41,7 @@ void parse_universe_of_packages(string filename) {
 			getline(stream, token, '\n');
 		} 
 	} else {
+		if(!flag)
 		cout<<"Latest updates are not found! Please run xpac -update your local package database!"<<endl;
 	}
 }

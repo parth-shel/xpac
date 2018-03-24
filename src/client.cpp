@@ -32,7 +32,7 @@ std::hash<std::string> str_hash;
 extern int build(std:: string command);
 extern void man_help();
 extern int client_driver(char * request, char * ip);
-extern void parse_universe_of_packages(std::string);
+extern void parse_universe_of_packages(std::string, int);
 extern void print_package_set();
 extern std::unordered_set<std::string> universe_list;
 extern void print_package_set();
@@ -55,6 +55,11 @@ static inline void xpac_dir_handler(){
 		/* Directory does not exist. So we need to create it */
 		mkdir(xpac_dir.c_str(),0775);
 	}
+}
+
+static inline void update_from_server(){
+	client_driver(strdup("GUNI"),strdup("repo.xpac.tech"));
+	rename("GUNI",universe_file.c_str());
 }
 
 static inline void get_from_server(const char * command_to_server,const char * pkg_name){
@@ -143,7 +148,8 @@ int main(int argc, char ** argv){
 
 	//Initializing:
 	xpac_dir_handler();
-	parse_universe_of_packages(universe_file);
+	int flag = (!strcmp(argv[1],"-update"))?1:0;
+	parse_universe_of_packages(universe_file,flag);
 
 	if(!strcmp(argv[1],"-install")){
 		if(argc<3){
@@ -153,17 +159,20 @@ int main(int argc, char ** argv){
 
 		char * pkg_name = strdup(argv[2]);
 
-		/*auto find_itr = universe_list.find(std::string(pkg_name));
+		auto find_itr = universe_list.find(std::string(pkg_name));
 		if(find_itr == universe_list.end()){	//Package not available to install in the repo!
 			std::cout<<"Sorry, package not available in the repository! Please check the website for more information!"<<std::endl;
 			exit(0);
-		}*/
-
+		}
 		//Installing the package:
 		install_package(pkg_name);
 
 		//TODO: work with anunai's folder management:
 		remove(argv[2]);
+	}
+	else if(!strcmp(argv[1],"-update")){
+		std::cout<<"Updating xpac"<<std::endl;
+		update_from_server();	
 	}
 	else if(!strcmp(argv[1],"-help")){
 		man_help();
