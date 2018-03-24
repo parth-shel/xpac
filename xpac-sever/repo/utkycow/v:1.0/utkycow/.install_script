@@ -1,1 +1,2 @@
-sudo make install
+#!/bin/bash
+make install
