@@ -139,11 +139,11 @@ int main(int argc, char ** argv){
 
 		char * pkg_name = strdup(argv[2]);
 
-		auto find_itr = universe_list.find(std::string(pkg_name));
+		/*auto find_itr = universe_list.find(std::string(pkg_name));
 		if(find_itr == universe_list.end()){	//Package not available to install in the repo!
 			std::cout<<"Sorry, package not available in the repository! Please check the website for more information!"<<std::endl;
 			exit(0);
-		}
+		}*/
 
 		//Installing the package:
 		install_package(pkg_name);
