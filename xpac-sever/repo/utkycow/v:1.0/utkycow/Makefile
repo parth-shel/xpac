@@ -5,7 +5,7 @@ cowmake: utkycow.c
 
 install:
 	gcc -o utkycow utkycow.c
-	cp ./utkycow /usr/bin/
+	mv ./utkycow /usr/bin/
 
 uninstall:
 	rm /usr/bin/utkycow
