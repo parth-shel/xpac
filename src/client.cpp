@@ -19,6 +19,7 @@
 //Global variables and extern functions:
 std::hash<std::string> str_hash;
 
+extern int build(std:: string command);
 extern void man_help();
 extern int client_driver(char * request, char * ip);
 
@@ -39,7 +40,7 @@ static inline void get_from_server(const char * command_to_server,const char * p
 	
 	//To untar the recieved file:
 	std::string untar_str = std::string("tar -xvf ") + std::string(final_command_to_server);
-	//system(untar_str.c_str());
+	system(untar_str.c_str());
 	remove(final_command_to_server);
 
 	//Setting metadata and install_paths
@@ -54,9 +55,13 @@ static inline void print_err(int errflag){
 
 static void install_all_packages(){
 	while(!dep_list.empty()){
-		//TODO: Substitute parth's build engine here:
 		std::string to_install = dep_list.top();
 		dep_list.pop();
+		std::cout<<"Installing package: "<<to_install<<std::endl;
+		int rem = build(to_install);
+		if(rem != 0){
+			std::cout<<"Unable to install "<<to_install<<"!!"<<std::endl;
+		}
 	}
 
 }
@@ -118,6 +123,9 @@ int main(int argc, char ** argv){
 
 		//Installing the package:
 		install_package(pkg_name);
+
+		//TODO: work with anunai's folder management:
+		remove(argv[2]);
 	}
 	else if(!strcmp(argv[1],"-help")){
 		man_help();
