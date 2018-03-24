@@ -125,15 +125,11 @@ int main(int argc, char ** argv){
 	struct passwd *pw = getpwuid(getuid());
 	const char *homedir = pw->pw_dir;
 	
-	std::string xpac_dir = std::string(homedir) + std::string("/.xpac/.universe_of_packages.csv");
+	std::string xpac_dir = std::string(homedir) + std::string("/.xpac/universe_of_packages.csv");
 
 	std::cout<<xpac_dir<<std::endl;
 
 	parse_universe_of_packages(std::string(xpac_dir));
-
-	//Printing:
-	print_package_set();
-
 
 	if(!strcmp(argv[1],"-install")){
 		if(argc<3){
@@ -142,6 +138,12 @@ int main(int argc, char ** argv){
 		}
 
 		char * pkg_name = strdup(argv[2]);
+
+		auto find_itr = universe_list.find(std::string(pkg_name));
+		if(find_itr == universe_list.end()){	//Package not available to install in the repo!
+			std::cout<<"Sorry, package not available in the repository! Please check the website for more information!"<<std::endl;
+			exit(0);
+		}
 
 		//Installing the package:
 		install_package(pkg_name);
