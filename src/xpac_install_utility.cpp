@@ -2,20 +2,19 @@
 #include <fstream>
 #include <sstream>
 #include <cstring>
-#include <set>
+#include <unordered_set>
 #include <iterator>
 #include <string>
 
 using namespace std;
 
-static set<string> universe_list;
+static unordered_set<string> universe_list;
 
 void parse_universe_of_packages(string);
 void print_package_set();
 
 void print_package_set() {
-	set<string>::iterator itr;
-	for(itr = universe_list.begin(); itr != universe_list.end(); itr++) {
+	for(auto itr = universe_list.begin(); itr != universe_list.end(); itr++) {
 		cout<<*itr<<endl;
 	}
 }

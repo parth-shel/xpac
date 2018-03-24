@@ -13,6 +13,9 @@
 #include<stack>
 #include<queue>
 #include<unordered_set>
+#include<unistd.h>
+#include<sys/types.h>
+#include<pwd.h>
 
 #include "metadata.h"
 
@@ -22,7 +25,9 @@ std::hash<std::string> str_hash;
 extern int build(std:: string command);
 extern void man_help();
 extern int client_driver(char * request, char * ip);
-extern void parse_universe_of_packages(string);
+extern void parse_universe_of_packages(std::string);
+extern void print_package_set();
+extern std::unordered_set<std::string> universe_list;
 extern void print_package_set();
 
 std::string metadata_path;
@@ -117,7 +122,18 @@ int main(int argc, char ** argv){
 	}
 
 	//Initializing:
-	parse_universe_of_packages(std::string("~/.xpac/.universe_of_packages.csv");
+	struct passwd *pw = getpwuid(getuid());
+	const char *homedir = pw->pw_dir;
+	
+	std::string xpac_dir = std::string(homedir) + std::string("/.xpac/.universe_of_packages.csv");
+
+	std::cout<<xpac_dir<<std::endl;
+
+	parse_universe_of_packages(std::string(xpac_dir));
+
+	//Printing:
+	print_package_set();
+
 
 	if(!strcmp(argv[1],"-install")){
 		if(argc<3){
