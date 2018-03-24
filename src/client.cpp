@@ -22,6 +22,8 @@ std::hash<std::string> str_hash;
 extern int build(std:: string command);
 extern void man_help();
 extern int client_driver(char * request, char * ip);
+extern void parse_universe_of_packages(string);
+extern void print_package_set();
 
 std::string metadata_path;
 std::string install_path;
@@ -113,6 +115,10 @@ int main(int argc, char ** argv){
 		print_err(1);
 		exit(1);
 	}
+
+	//Initializing:
+	parse_universe_of_packages(std::string("~/.xpac/.universe_of_packages.csv");
+
 	if(!strcmp(argv[1],"-install")){
 		if(argc<3){
 			print_err(2);

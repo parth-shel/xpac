@@ -46,6 +46,7 @@ void parse_universe_of_packages(string filename) {
 	}
 }
 
+/*
 int main(int argc, char ** argv) {
 	if(argc < 1) {
 		cout<<"Usage: xpac_install_utility <universe_of_packages>"<<endl;
@@ -54,4 +55,4 @@ int main(int argc, char ** argv) {
 	parse_universe_of_packages(filename);
 	print_package_set();
 	return 1;
-}
+}*/
