@@ -33,3 +33,5 @@
 
 # Log Files
 *.log
+
+/repo
