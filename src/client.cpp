@@ -174,6 +174,10 @@ int main(int argc, char ** argv){
 		std::cout<<"Updating xpac"<<std::endl;
 		update_from_server();	
 	}
+	else if(!strcmp(argv[1],"-list")){
+		std::cout<<"Listing packages on xpac"<<std::endl;
+		print_package_set();	
+	}
 	else if(!strcmp(argv[1],"-help")){
 		man_help();
 	}
