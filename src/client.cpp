@@ -23,7 +23,7 @@
 //Initializing the home directory, and the users xpac directory:
 struct passwd *pw = getpwuid(getuid());
 const char *homedir = pw->pw_dir;
-std::string xpac_dir = std::string(homedir) + std::string("/.xpac/");
+std::string xpac_dir = std::string(homedir) +std::string("/.xpac/");
 std::string universe_file = xpac_dir + std::string("universe_of_packages.csv");
 
 //Global variables and extern functions:
