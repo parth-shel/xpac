@@ -92,9 +92,6 @@ static inline void print_err(int errflag){
 
 static void install_all_packages(){
 
-	//Cleaning all packages and their folders:
-	
-
 	while(!dep_list.empty()){
 		std::string to_install = dep_list.top();
 		std::string to_display = to_install.substr(0,to_install.find("/"));
@@ -192,9 +189,6 @@ int main(int argc, char ** argv){
 		}
 		//Installing the package:
 		install_package(pkg_name);
-
-		//TODO: work with anunai's folder management:
-		remove(argv[2]);
 	}
 	else if(!strcmp(argv[1],"-update")){
 		std::cout<<"Updating xpac"<<std::endl;
