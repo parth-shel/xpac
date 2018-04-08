@@ -2,13 +2,14 @@
 #include <fstream>
 #include <string>
 
-extern char * homedir;
+extern std::string xpac_dir;
+std::string installed_file = xpac_dir + ".installed";
 
 std::unordered_set<std::string> user_installed_list;
 
 void calculate_users_packages(){
 	std::ifstream file;
-	file.open(std::string(homedir) + ".xpac/.installed");
+	file.open(installed_file);
 	std::string next_installed;
 	while (file >> next_installed) {
 		user_installed_list.insert(next_installed);
@@ -19,10 +20,10 @@ void calculate_users_packages(){
 
 void add_to_install_list(std::string str) {
 	std::fstream file;
-	file.open(std::string(homedir) + ".xpac/.installed", std::fstream::out | std::ios::app);
+	file.open(installed_file, std::ios::out | std::ios::app);
 
 	// Simply appending to file
-	file << str;
+	file << str << "\n";
 
 	file.close();
 }

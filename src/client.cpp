@@ -40,6 +40,7 @@ extern void print_package_set();
 extern void add_to_install_list(std::string str);
 extern void calculate_users_packages();
 extern std::unordered_set<std::string> user_installed_list;
+extern void cleanup_directory(std::string);
 
 std::string metadata_path;
 std::string install_path;
@@ -96,15 +97,18 @@ static void install_all_packages(){
 		dep_list.pop();
 		std::cout<<"Installing package: "<<to_display<<std::endl;
 		if(user_installed_list.find(to_display) != user_installed_list.end()) {
-			std::cout<<"Already installed "<<to_display<<" !"<<std::endl;
+			std::cout<<"Already installed "<<to_display<<"!"<<std::endl;
+			if(dep_list.empty())	exit(1);
 		} else {
-			int rem = build(to_install);
+			int rem = system(to_install.c_str());
 			if(rem != 0){
 				std::cout<<"Unable to install "<<to_display<<"!!"<<std::endl;
 				std::cout<<"Please rectify the errors and try again!"<<std::endl;
+				cleanup_directory(to_display);
 				exit(1);
 			} else {
 				add_to_install_list(to_display); //Adding to the list of successfully installed packages
+				cleanup_directory(to_display);
 			}
 		}
 	}
