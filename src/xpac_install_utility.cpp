@@ -2,13 +2,13 @@
 #include <fstream>
 #include <sstream>
 #include <cstring>
-#include <unordered_set>
+#include <set>
 #include <iterator>
 #include <string>
 
 using namespace std;
 
-unordered_set<string> universe_list;
+set<string> universe_list;
 
 void parse_universe_of_packages(string, int);
 void print_package_set();

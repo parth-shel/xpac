@@ -12,6 +12,7 @@
 #include<cstdlib>
 #include<stack>
 #include<queue>
+#include<set>
 #include<unordered_set>
 #include<unistd.h>
 #include<sys/types.h>
@@ -34,7 +35,7 @@ extern void man_help();
 extern int client_driver(char * request, char * ip);
 extern void parse_universe_of_packages(std::string, int);
 extern void print_package_set();
-extern std::unordered_set<std::string> universe_list;
+extern std::set<std::string> universe_list;
 extern void print_package_set();
 
 std::string metadata_path;
@@ -175,7 +176,7 @@ int main(int argc, char ** argv){
 		update_from_server();	
 	}
 	else if(!strcmp(argv[1],"-list")){
-		std::cout<<"Listing packages on xpac"<<std::endl;
+		std::cout<<"Listing all packages available for installation: "<<std::endl;
 		print_package_set();	
 	}
 	else if(!strcmp(argv[1],"-help")){
