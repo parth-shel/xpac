@@ -91,9 +91,14 @@ static inline void print_err(int errflag){
 }
 
 static void install_all_packages(){
+
+	//Cleaning all packages and their folders:
+	
+
 	while(!dep_list.empty()){
 		std::string to_install = dep_list.top();
 		std::string to_display = to_install.substr(0,to_install.find("/"));
+		cleanup_directory(to_display);
 		dep_list.pop();
 		std::cout<<"Installing package: "<<to_display<<std::endl;
 		if(user_installed_list.find(to_display) != user_installed_list.end()) {
@@ -104,11 +109,15 @@ static void install_all_packages(){
 			if(rem != 0){
 				std::cout<<"Unable to install "<<to_display<<"!!"<<std::endl;
 				std::cout<<"Please rectify the errors and try again!"<<std::endl;
-				cleanup_directory(to_display);
+				//Emptying the stack:
+				while(!dep_list.empty()) {
+					std::string to_install = dep_list.top();
+					cleanup_directory(to_display);
+					dep_list.pop();
+				}
 				exit(1);
 			} else {
 				add_to_install_list(to_display); //Adding to the list of successfully installed packages
-				cleanup_directory(to_display);
 			}
 		}
 	}

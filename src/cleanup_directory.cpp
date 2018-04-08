@@ -6,13 +6,12 @@
 #include <iostream>
 
 void cleanup_directory(std::string dir_name){
+	dir_name = get_current_dir_name() + std::string("/") + dir_name;
 	int ret = fork();
 	if(ret == 0) {
-		std::cout<<"HERE TRYNA TO DELETE THIS SHIT!"<<dir_name.c_str();
-		char * const * dir_c_str = (char * const *)strdup(dir_name.c_str());
-		execvp("rm -rf", dir_c_str);
+		execl("/bin/rm", "rm", "-rf", dir_name.c_str(), NULL);
 		exit(1);
 	} else {
-		waitpid(ret, 0, NULL);
+		waitpid( ret, NULL, 0);
 	}
 }
