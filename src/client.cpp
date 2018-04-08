@@ -37,7 +37,7 @@ extern void parse_universe_of_packages(std::string, int);
 extern void print_package_set();
 extern std::set<std::string> universe_list;
 extern void print_package_set();
-extern void add_to_install(std::string str);
+extern void add_to_install_list(std::string str);
 extern void calculate_users_packages();
 extern std::unordered_set<std::string> user_installed_list;
 
@@ -72,7 +72,7 @@ static inline void get_from_server(const char * command_to_server,const char * p
 	std::string pkg_hash = std::to_string(str_hash(std::string(pkg_name))).c_str();
 	command.append(pkg_hash);
 	char * final_command_to_server = (char*)command.c_str();
-	client_driver(final_command_to_server,strdup("localhost"));
+	client_driver(final_command_to_server,strdup("repo.xpac.tech"));
 	
 	//To untar the recieved file:
 	std::string untar_str = std::string("tar -xvf ") + std::string(final_command_to_server);
@@ -92,14 +92,19 @@ static inline void print_err(int errflag){
 static void install_all_packages(){
 	while(!dep_list.empty()){
 		std::string to_install = dep_list.top();
+		std::string to_display = to_install.substr(0,to_install.find("/"));
 		dep_list.pop();
-		std::cout<<"Installing package: "<<to_install<<std::endl;
-		if(user_installed_list.find(to_install) == user_installed_list.end()) {
-			std::cout<<"Already installed "<<to_install<<" !"<<std::endl;
+		std::cout<<"Installing package: "<<to_display<<std::endl;
+		if(user_installed_list.find(to_display) != user_installed_list.end()) {
+			std::cout<<"Already installed "<<to_display<<" !"<<std::endl;
 		} else {
 			int rem = build(to_install);
 			if(rem != 0){
-				std::cout<<"Unable to install "<<to_install<<"!!"<<std::endl;
+				std::cout<<"Unable to install "<<to_display<<"!!"<<std::endl;
+				std::cout<<"Please rectify the errors and try again!"<<std::endl;
+				exit(1);
+			} else {
+				add_to_install_list(to_display); //Adding to the list of successfully installed packages
 			}
 		}
 	}

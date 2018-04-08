@@ -18,8 +18,8 @@ void calculate_users_packages(){
 }
 
 void add_to_install_list(std::string str) {
-	std::ofstream file;
-	file.open(std::string(homedir) + ".xpac/.installed", std::ios::app);
+	std::fstream file;
+	file.open(std::string(homedir) + ".xpac/.installed", std::fstream::out | std::ios::app);
 
 	// Simply appending to file
 	file << str;

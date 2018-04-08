@@ -16,8 +16,8 @@ int build(std::string command) {
 		return -1;
 	}
 	std::string to_execute = std::string(get_current_dir_name()) + std::string("/.install_script");
-	system(to_execute.c_str());
+	int ret_value = system(to_execute.c_str());
 	setuid(current_uid);
 	chdir(curr_dir);
-	return 0;
+	return ret_value;	//Returning this signifies whether any failuers were encounterd in the installation process
 }
