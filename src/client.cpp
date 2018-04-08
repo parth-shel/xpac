@@ -3,21 +3,21 @@
  * Client for xpac
  */
 
-#include<iostream>
-#include<string.h>
-#include<functional>
-#include<sys/stat.h>
-#include<sys/types.h>
-#include<string>
-#include<cstdlib>
-#include<stack>
-#include<queue>
-#include<set>
-#include<unordered_set>
-#include<unistd.h>
-#include<sys/types.h>
+#include <iostream>
+#include <string.h>
+#include <functional>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <string>
+#include <cstdlib>
+#include <stack>
+#include <queue>
+#include <set>
+#include <unordered_set>
+#include <unistd.h>
+#include <sys/types.h>
 #include <dirent.h>
-#include<pwd.h>
+#include <pwd.h>
 
 #include "metadata.h"
 
@@ -37,6 +37,9 @@ extern void parse_universe_of_packages(std::string, int);
 extern void print_package_set();
 extern std::set<std::string> universe_list;
 extern void print_package_set();
+extern void add_to_install(std::string str);
+extern void calculate_users_packages();
+extern std::unordered_set<std::string> user_installed_list;
 
 std::string metadata_path;
 std::string install_path;
@@ -69,7 +72,7 @@ static inline void get_from_server(const char * command_to_server,const char * p
 	std::string pkg_hash = std::to_string(str_hash(std::string(pkg_name))).c_str();
 	command.append(pkg_hash);
 	char * final_command_to_server = (char*)command.c_str();
-	client_driver(final_command_to_server,strdup("repo.xpac.tech"));
+	client_driver(final_command_to_server,strdup("localhost"));
 	
 	//To untar the recieved file:
 	std::string untar_str = std::string("tar -xvf ") + std::string(final_command_to_server);
@@ -91,12 +94,15 @@ static void install_all_packages(){
 		std::string to_install = dep_list.top();
 		dep_list.pop();
 		std::cout<<"Installing package: "<<to_install<<std::endl;
-		int rem = build(to_install);
-		if(rem != 0){
-			std::cout<<"Unable to install "<<to_install<<"!!"<<std::endl;
+		if(user_installed_list.find(to_install) == user_installed_list.end()) {
+			std::cout<<"Already installed "<<to_install<<" !"<<std::endl;
+		} else {
+			int rem = build(to_install);
+			if(rem != 0){
+				std::cout<<"Unable to install "<<to_install<<"!!"<<std::endl;
+			}
 		}
 	}
-
 }
 
 static void install_package(const char * pkg_name){
@@ -151,6 +157,7 @@ int main(int argc, char ** argv){
 	xpac_dir_handler();
 	int flag = (!strcmp(argv[1],"-update"))?1:0;
 	parse_universe_of_packages(universe_file,flag);
+	calculate_users_packages();
 
 	if(!strcmp(argv[1],"-install")){
 		if(argc<3){
