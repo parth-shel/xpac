@@ -57,77 +57,39 @@ void MD5checksum::generate_hash() {
 
 	close(fd);
 
-	// testing
+	result_hash.clear();
 	for(int i = 0;i < MD5_DIGEST_LENGTH;i++) {
-		printf("%02x", result[i]);
+		result_hash.push_back(result[i]);
 	}
 
-	std::string hash_file = file_path;
-	hash_file.append(".md5hash");
-
-	FILE * f = fopen(hash_file.c_str(), "w");
-	for(int i = 0;i < MD5_DIGEST_LENGTH;i++) {
-		fprintf(f, "%02x", result[i]);
-	}
-
-	// this->result_hash = std::string(reinterpret_cast<char*> (result));
 }
 
-/*std::string MD5checksum::get_hash() {
+/*std::vector MD5checksum::get_hash() {
 	return this->result_hash;
 }*/
 
-bool MD5checksum::compare_hashes(std::string that) {
-	std::string hash_file = this->file_path;
-	hash_file.append(".md5hash");
-
-	FILE * that_f = fopen(that.c_str(), "rb");
-	if(that_f == NULL) {
-		return false;
-	}
-	
-	FILE * this_f = fopen(hash_file.c_str(), "rb");
-	if(this_f == NULL) {
-		return false;
-	}
-
-	unsigned char that_c, this_c;
-	
-	//fscanf(that_f, "%02x", &that_c);
-	//fscanf(this_f, "%02x", &this_c);
-	
-	while((fscanf(that_f, "%02x", &that_c)) && (fscanf(this_f, "%02x", &this_c)) && (that_c == this_c)) {
-		//fscanf(that_f, "%02x", &that_c);
-		//fscanf(this_f, "%02x", &this_c);
-	}
-
-	fclose(that_f);
-	fclose(this_f);
-
-	if(that_c == this_c)
-		return true;
-	else if(that_c != this_c)
-		return false;
+bool MD5checksum::compare_hashes(MD5checksum* that) {
+	return (this->result_hash == that->result_hash);	
 }
 
 int main(int argc, char* argv[]) {
-	if(argc != 2) {
+	if(argc != 3) {
 		std::cout << "please specify file path" << std::endl;
 		exit(EXIT_FAILURE);
 	}
 
-	MD5checksum* md5 = new MD5checksum(std::string(argv[1]));
-	
-	// std::cout << "generated MD5 hash: " << md5->get_hash() << std::endl;
+	MD5checksum* md51 = new MD5checksum(std::string(argv[1]));
+	MD5checksum* md52 = new MD5checksum(std::string(argv[2]));
 
-	char compare[32];
-	sprintf(compare, "%s.md5", argv[1]);
-
-	if(md5->compare_hashes(std::string(compare))) {
+	if(md51->compare_hashes(md52)) {
 		std::cout << "this shit works!" << std::endl;
 	}
+	else {
+		std::cout << "files differ.." << std::endl;
+	}
 
-	delete md5;
+	delete md51;
+	delete md52;
 
 	return EXIT_SUCCESS;
 }
