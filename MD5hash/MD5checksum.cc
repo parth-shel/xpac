@@ -81,27 +81,33 @@ bool MD5checksum::compare_hashes(std::string that) {
 	std::string hash_file = this->file_path;
 	hash_file.append(".md5hash");
 
-	FILE * that_f = fopen(that.c_str(), "r");
+	FILE * that_f = fopen(that.c_str(), "rb");
 	if(that_f == NULL) {
 		return false;
 	}
 	
-	FILE * this_f = fopen(hash_file.c_str(), "r");
+	FILE * this_f = fopen(hash_file.c_str(), "rb");
 	if(this_f == NULL) {
 		return false;
 	}
 
 	unsigned char that_c, this_c;
-
-	while(that_c!=EOF || this_c!=EOF) {
-		fscanf(that_f, "%02x", &that_c);
-		fscanf(this_f, "%02x", &this_c);
-		if(that_c != this_c) {
-			return false;
-		}
+	
+	//fscanf(that_f, "%02x", &that_c);
+	//fscanf(this_f, "%02x", &this_c);
+	
+	while((fscanf(that_f, "%02x", &that_c)) && (fscanf(this_f, "%02x", &this_c)) && (that_c == this_c)) {
+		//fscanf(that_f, "%02x", &that_c);
+		//fscanf(this_f, "%02x", &this_c);
 	}
 
-	return true;
+	fclose(that_f);
+	fclose(this_f);
+
+	if(that_c == this_c)
+		return true;
+	else if(that_c != this_c)
+		return false;
 }
 
 int main(int argc, char* argv[]) {
@@ -115,7 +121,7 @@ int main(int argc, char* argv[]) {
 	// std::cout << "generated MD5 hash: " << md5->get_hash() << std::endl;
 
 	char compare[32];
-	sprintf(compare, "%s.md5hash", argv[1]);
+	sprintf(compare, "%s.md5", argv[1]);
 
 	if(md5->compare_hashes(std::string(compare))) {
 		std::cout << "this shit works!" << std::endl;
