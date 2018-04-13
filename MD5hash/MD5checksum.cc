@@ -61,6 +61,7 @@ void MD5checksum::generate_hash() {
 	for(int i = 0;i < MD5_DIGEST_LENGTH;i++) {
 		result_hash.push_back(result[i]);
 	}
+
 }
 
 /*std::vector MD5checksum::get_hash() {
