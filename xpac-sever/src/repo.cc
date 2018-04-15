@@ -74,7 +74,7 @@ namespace repo {
 			}
 		}
 
-		else if(token.compare("GMDT") == 0) { // GET METADATA
+		/*else if(token.compare("GMDT") == 0) { // GET METADATA
 			std::getline(iss, token, '-');
 			unsigned long long PKGID = std::strtoull(token.c_str(), NULL, 0);
 			if(symbol_table.count(PKGID)) {
@@ -86,16 +86,7 @@ namespace repo {
 				std::strcpy(file_name, repo_path.c_str());
 				return 0;
 			}
-		}
-
-		else if(token.compare("CHKSM") == 0) { // GET MD5 HASH
-			std::getline(iss, token, '-');
-			unsigned long long PKGID = std::strtoull(token.c_str(), NULL, 0);
-			if(symbol_table.count(PKGID)) {
-				// TODO: calculate MD5 hash and send file path to saved hash	
-				return -1;
-			}
-		}
+		}*/
 
 		else if(token.compare("GUNI") == 0) {
 			std::string universe_path("./universe_of_packages.csv");
