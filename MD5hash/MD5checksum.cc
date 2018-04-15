@@ -61,7 +61,29 @@ void MD5checksum::generate_hash() {
 	for(int i = 0;i < MD5_DIGEST_LENGTH;i++) {
 		result_hash.push_back(result[i]);
 	}
+}
 
+void MD5checksum::save_hash() {
+	std::string hash_path(file_path);
+	hash_path.append(".md5hash");
+	std::ofstream hash_file(hash_path, std::ios::out | std::ios::trunc);
+	std::string str(result_hash.begin(), result_hash.end());
+	hash_file << str; 
+	hash_file.close();
+}
+
+bool MD5checksum::compare_saved_hash(std::string other_file_path) {
+	std::ifstream file(other_file_path, std::ios::in);
+	if(!file.good()) {
+		return false;
+	}
+
+	if(file.is_open()) {
+		std::string buf((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+		std::string str(result_hash.begin(), result_hash.end());
+		return (str == buf);
+	}
+	return false;
 }
 
 /*std::vector MD5checksum::get_hash() {
@@ -82,10 +104,20 @@ int main(int argc, char* argv[]) {
 	MD5checksum* md52 = new MD5checksum(std::string(argv[2]));
 
 	if(md51->compare_hashes(md52)) {
-		std::cout << "this shit works!" << std::endl;
+		std::cout << "files are the same!" << std::endl;
 	}
 	else {
 		std::cout << "files differ.." << std::endl;
+	}
+
+	std::string hash_path(argv[2]);
+	hash_path.append(".md5hash");
+	md52->save_hash();
+	if(md51->compare_saved_hash(hash_path)) {
+		std::cout << "saved hash matches!" << std::endl;
+	}
+	else {
+		std::cout << "saved hash differ.." << std::endl;
 	}
 
 	delete md51;
