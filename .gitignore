@@ -33,3 +33,6 @@
 
 # Log Files
 *.log
+
+# Swap Files
+*.swp
