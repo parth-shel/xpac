@@ -41,3 +41,6 @@
 # Repo
 ./xpac-server/repo
 ./xpac-server/repo/*
+
+# Swap Files
+*.swp
