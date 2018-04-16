@@ -67,6 +67,11 @@ static inline void update_from_server(){
 	rename("GUNI",universe_file.c_str());
 }
 
+static inline void untar_file(std::string filename) {
+	std::string untar_str = std::string("tar -xvf ") + std::string(filename);
+	system(untar_str.c_str());
+}
+
 static inline void get_from_server(const char * command_to_server,const char * pkg_name){
 
 	std::string command = std::string(command_to_server);
@@ -76,8 +81,9 @@ static inline void get_from_server(const char * command_to_server,const char * p
 	client_driver(final_command_to_server,strdup("repo.xpac.tech"));
 	
 	//To untar the recieved file:
-	std::string untar_str = std::string("tar -xvf ") + std::string(final_command_to_server);
-	system(untar_str.c_str());
+	untar_file(final_command_to_server);
+
+	//Removing the downloaded file from server:
 	remove(final_command_to_server);
 
 	//Setting metadata and install_paths
