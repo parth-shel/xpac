@@ -50,7 +50,7 @@ void MD5checksum::generate_hash() {
 	if((file_size = get_file_size(fd)) == 0) {
 		return;
 	}
-	
+
 	file_buffer = mmap(0, file_size, PROT_READ, MAP_SHARED, fd, 0);
 	MD5((unsigned char*) file_buffer, file_size, result);
 	munmap(file_buffer, file_size);
@@ -87,41 +87,9 @@ bool MD5checksum::compare_saved_hash(std::string other_file_path) {
 }
 
 /*std::vector MD5checksum::get_hash() {
-	return this->result_hash;
-}*/
+  return this->result_hash;
+  }*/
 
 bool MD5checksum::compare_hashes(MD5checksum* that) {
 	return (this->result_hash == that->result_hash);	
 }
-
-/*int main(int argc, char* argv[]) {
-	if(argc != 3) {
-		std::cout << "please specify file path" << std::endl;
-		exit(EXIT_FAILURE);
-	}
-
-	MD5checksum* md51 = new MD5checksum(std::string(argv[1]));
-	MD5checksum* md52 = new MD5checksum(std::string(argv[2]));
-
-	if(md51->compare_hashes(md52)) {
-		std::cout << "files are the same!" << std::endl;
-	}
-	else {
-		std::cout << "files differ.." << std::endl;
-	}
-
-	std::string hash_path(argv[2]);
-	hash_path.append(".md5hash");
-	md52->save_hash();
-	if(md51->compare_saved_hash(hash_path)) {
-		std::cout << "saved hash matches!" << std::endl;
-	}
-	else {
-		std::cout << "saved hash differ.." << std::endl;
-	}
-
-	delete md51;
-	delete md52;
-
-	return EXIT_SUCCESS;
-}*/
