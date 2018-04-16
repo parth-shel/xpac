@@ -84,6 +84,7 @@ namespace repo {
 					repo_path.erase(repo_path.length() - 1, 1);
 				}
 				repo_path.append(".metadata");
+				std::cout << "METADATA PATH: " << repo_path << std::endl;
 				std::strcpy(file_name, repo_path.c_str());
 				return 0;
 			}
@@ -94,12 +95,12 @@ namespace repo {
 			unsigned long long PKGID = std::strtoull(token.c_str(), NULL, 0);
 			if(symbol_table.count(PKGID)) {
 				//TODO: calculate MD5 hash and send file path to saved hash
-			    std::string repo_path = symbol_table[PKGID];
-                MD5checksum* md5 = new MD5checksum(repo_path);
-                md5->save_hash();
-                repo_path.append(".md5hash");
-                std::strcpy(file_name, repo_path.c_str());
-                return 0;
+				std::string repo_path = symbol_table[PKGID];
+				MD5checksum* md5 = new MD5checksum(repo_path);
+				md5->save_hash();
+				repo_path.append(".md5hash");
+				std::strcpy(file_name, repo_path.c_str());
+				return 0;
 			}
 		}
 
