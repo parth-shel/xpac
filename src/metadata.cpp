@@ -17,7 +17,6 @@ std::string metadata::get_info(){
 	return info;
 }
 
-
 //For debugging purposes only:
 void metadata::add_dep_pkg(std::string pkg_name){
 	this->dep_list->push_back(pkg_name);
@@ -31,7 +30,7 @@ void metadata::write_package(metadata * package){
 	std::ofstream file_object;
 	std::string filepath = std::string(".metadata");	//Filename consists of package name and a metadata
 	file_object.open(filepath.c_str(),std::ios::out | std::ios::trunc);
-	file_object << package->pkg_name << "\n" << package->pkg_id << "\n";
+	file_object << package->pkg_name << "\n" << package->pkg_ver << "\n" << package->pkg_id << "\n";
 	for(auto&& itr = package->dep_list->begin(); itr!=package->dep_list->end(); itr++)
 					file_object<< *itr << "\n";
 }
@@ -45,6 +44,8 @@ metadata * metadata::get_package(std::string filepath){
 	//Reading the name and the package id of the package to be read:
 	getline(file_object,next_line);
 	new_package->pkg_name = next_line;
+	getline(file_object,next_line);
+	new_package->pkg_ver = next_line;
 	getline(file_object,next_line);
 	new_package->pkg_id = next_line;
 
