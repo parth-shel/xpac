@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Log Files
+*.log
+
+# Swap Files
+*.swp

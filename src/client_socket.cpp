@@ -14,7 +14,7 @@
 #include <fcntl.h> // open, O_WRONLY, O_CREAT
 #include <unistd.h> // close, write, read
 
-#define SRV_PORT 6969
+#define SRV_PORT 5108
 #define MAX_RECV_BUF 256
 #define MAX_SEND_BUF 256
 
@@ -109,8 +109,9 @@ int recv_file(int sock, char* file_name) {
  		return -1;
  	}
  
- 	// create file to save received data.
- 	if ( (fd = open(file_name, O_WRONLY|O_CREAT, 0755)) < 0 ) {
+
+ 	// create file to save received data
+ 	if ( (fd = open(file_name, O_WRONLY|O_CREAT, 0666)) < 0 ) {
  		perror("error creating file");
  		return -1;
  	}
