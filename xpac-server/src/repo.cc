@@ -9,6 +9,7 @@
 #include <pwd.h>
 
 #include "repo.hh"
+#include "MD5checksum.hh"
 
 struct passwd *pw = getpwuid(getuid());
 const char *homedir = pw->pw_dir;
@@ -93,7 +94,12 @@ namespace repo {
 			unsigned long long PKGID = std::strtoull(token.c_str(), NULL, 0);
 			if(symbol_table.count(PKGID)) {
 				//TODO: calculate MD5 hash and send file path to saved hash
-				return -1;
+			    std::string repo_path = symbol_table[PKGID];
+                MD5checksum* md5 = new MD5checksum(repo_path);
+                md5->save_hash();
+                repo_path.append(".md5hash");
+                std::strcpy(file_name, repo_path.c_str());
+                return 0;
 			}
 		}
 
