@@ -94,7 +94,7 @@ bool MD5checksum::compare_hashes(MD5checksum* that) {
 	return (this->result_hash == that->result_hash);	
 }
 
-int main(int argc, char* argv[]) {
+/*int main(int argc, char* argv[]) {
 	if(argc != 3) {
 		std::cout << "please specify file path" << std::endl;
 		exit(EXIT_FAILURE);
@@ -124,4 +124,4 @@ int main(int argc, char* argv[]) {
 	delete md52;
 
 	return EXIT_SUCCESS;
-}
+}*/
