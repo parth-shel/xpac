@@ -6,9 +6,12 @@ log=./src/server-log.cc
 test=./src/test-client.cc
 universe=./scripts/generate_universe.cc
 metadata=./scripts/generate_metadata.cc
+checksum=./src/MD5checksum.cc
 
-xpac-server: ${server} ${repo} ${log}	
-	g++ -g -std=c++17 -o xpac-server ${server} ${repo} ${log}
+flags=-lssl -lcrypto
+
+xpac-server: ${server} ${repo} ${log} ${checksum}	
+	g++ -g -std=c++17 -o xpac-server ${server} ${repo} ${log} ${checksum} ${flags}
 
 test-client: ${test}
 	g++ -g -std=c++17 -o test-client ${test}
