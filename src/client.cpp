@@ -14,7 +14,6 @@
 #include <queue>
 #include <set>
 #include <map>
-#include <unordered_map>
 #include <unordered_set>
 #include <fstream>
 #include <unistd.h>
@@ -32,6 +31,7 @@ const char *homedir = pw->pw_dir;
 std::string xpac_dir = std::string(homedir) +std::string("/.xpac/");
 std::string metadata_dir = xpac_dir + ".metadata";
 std::string universe_file = xpac_dir + std::string("universe_of_packages.csv");
+std::string update_file = xpac_dir + ".updates";
 
 //Global variables and extern functions:
 std::hash<std::string> str_hash;
@@ -40,12 +40,11 @@ extern int build(std:: string command);
 extern void man_help();
 extern int client_driver(char * request, char * ip);
 extern void parse_universe_of_packages(std::string);
-extern void print_package_set();
+extern void print_package_set(std::map<std::string, std::string>& to_print);
 extern std::map<std::string,std::string> universe_list;
-extern void print_package_set();
 extern void add_to_install_list(std::string name, std::string version);
 extern void calculate_users_packages();
-extern std::unordered_map<std::string,std::string> user_installed_list;
+extern std::map<std::string,std::string> user_installed_list;
 extern void cleanup_directory(std::string);
 
 //Important metadata objects:
@@ -112,7 +111,6 @@ static void xpac_init(){
 	parse_universe_of_packages(universe_file);
 	//Calculating the users' packages:
 	calculate_users_packages();
-
 }
 
 static inline void untar_file(std::string filename) {
@@ -151,8 +149,6 @@ static void install_all_packages(){
 		std::string to_display = to_install.substr(0,to_install.find("/"));
 		curr = metadata::get_package(to_display + "/.metadata");
 		std::string curr_version = curr->get_pkg_ver();
-		metadata::write_package(curr, metadata_dir.c_str());
-		//cleanup_directory(to_display);
 		dep_list.pop();
 		std::cout<<"Installing package: "<<to_display<<std::endl;
 		if(user_installed_list.find(to_display) != user_installed_list.end()) {
@@ -170,8 +166,10 @@ static void install_all_packages(){
 					dep_list.pop();
 				}
 				exit(1);
-			} else {
+			} else { //Successfully installed
+				metadata::write_package(curr, metadata_dir.c_str());
 				add_to_install_list(to_display, curr_version); //Adding to the list of successfully installed packages
+				cleanup_directory(to_display);
 			}
 		}
 	}
@@ -219,6 +217,72 @@ static void install_package(const char * pkg_name){
 	install_all_packages();
 }
 
+void calculate_differences() {
+	std::string to_update_string;
+	std::vector<std::string> updates;
+	for(auto key_itr = user_installed_list.begin(); key_itr!=user_installed_list.end(); key_itr++) {
+		if(key_itr->second.compare(universe_list.find(key_itr->first)->second) != 0) {
+			to_update_string += key_itr->first + " " + key_itr->second + " -> " + universe_list.find(key_itr->first)->second + "\n";
+			updates.push_back(key_itr->first);
+		}
+	}
+	std::cout<<"Updates available: "<<std::endl;
+	if(to_update_string.compare("") == 0) {
+		std::cout<<"None!"<<std::endl;
+	}
+	else {
+		std::cout<<to_update_string;
+	}
+	
+	//Writing all the updates to the file
+	std::fstream file;
+	file.open(update_file, std::ios::out | std::ios::trunc);
+
+	// Simply appending to file
+	for(auto itr = updates.begin(); itr!=updates.end(); itr++)
+		file << *itr <<"\n";
+	file.close();
+}
+
+void upgrade_all_packages() {
+	std::vector<std::string> updates;
+
+	std::fstream file;
+	file.open(update_file, std::ios::in);
+
+	std::string next_line;
+	while(getline(file,next_line)) {
+		updates.push_back(next_line);
+	}
+
+	if(updates.size() == 0)	{
+		std::cout<<"No updates available!"<<std::endl;
+		return;
+	}
+
+	std::cout<<"The following packages will be updated: "<<std::endl;
+	for(auto itr = updates.begin(); itr!=updates.end(); itr++){
+		std::cout<<*itr<<std::endl;
+	}
+	char confirm;
+	do {
+		std::cout<<"Do you confirm?[Y/n]"<<std::endl;
+		std::cin>>confirm;
+	} while(confirm != 'Y' && confirm != 'n' && confirm != 'N' && confirm != 'y');
+
+	if(confirm == 'n' || confirm == 'N') {
+		exit(0);
+	}
+	else { //Updating all packages:
+		for(auto itr = updates.begin(); itr!=updates.end(); itr++) {
+			auto find_itr = user_installed_list.find(*itr);
+			user_installed_list.erase(find_itr);
+			install_package((*itr).c_str());
+		}
+	}
+
+}
+
 int main(int argc, char ** argv){
 	if(argc<2){
 		print_err(1);
@@ -248,11 +312,19 @@ int main(int argc, char ** argv){
 	}
 	else if(!strcmp(argv[1],"-update")){
 		std::cout<<"Updating xpac"<<std::endl;
-		update_from_server();	
+		std::cout<<"Fetching updated pacakage list from server: "<<std::endl;
+		update_from_server();
+		parse_universe_of_packages(universe_file);
+		std::cout<<"Calculating differences: "<<std::endl;
+		calculate_differences();
+	}
+	else if(!strcmp(argv[1], "-upgrade")){
+		std::cout<<"Upgrading all packages"<<std::endl;
+		upgrade_all_packages();
 	}
 	else if(!strcmp(argv[1],"-list")){
 		std::cout<<"Listing all packages available for installation: "<<std::endl;
-		print_package_set();	
+		print_package_set(universe_list);	
 	}
 	else if(!strcmp(argv[1],"-help")){
 		man_help();

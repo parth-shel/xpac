@@ -11,15 +11,16 @@ using namespace std;
 map<string,string> universe_list;
 
 void parse_universe_of_packages(string);
-void print_package_set();
+void print_package_set(std::map<std::string, std::string>& to_print);
 
-void print_package_set() {
-	for(auto itr = universe_list.begin(); itr != universe_list.end(); itr++) {
-		cout<<(itr->first)<<" "<<(itr->second)<<endl;
+void print_package_set(std::map<std::string, std::string>& to_print) {
+	for(auto itr = to_print.begin(); itr != to_print.end(); itr++) {
+		cout<<"Package name: "<<(itr->first)<<" "<<"Package version: "<<(itr->second)<<endl;
 	}
 }
 
 void parse_universe_of_packages(string filename) {
+	universe_list.clear();
 	// assuming relative filepath
 	// file resides in same directory as xpac_install_utility executable
 	// change accordingly to the needs

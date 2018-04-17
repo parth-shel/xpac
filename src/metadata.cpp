@@ -10,7 +10,7 @@ metadata::metadata(std::string pkg_name,std::string pkg_ver){
 
 std::string metadata::get_info(){
 	std::string info;
-	info += pkg_name + "\n" + pkg_id + "\n";
+	info += pkg_name + "\n" + pkg_ver + "\n" + pkg_id + "\n";
 	if(dep_list!=NULL)
 		for(auto && itr=dep_list->begin(); itr!=dep_list->end(); itr++)
 			info += *itr+";";
