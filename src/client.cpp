@@ -43,7 +43,7 @@ extern void parse_universe_of_packages(std::string);
 extern void print_package_set();
 extern std::map<std::string,std::string> universe_list;
 extern void print_package_set();
-extern void add_to_install_list(std::string str);
+extern void add_to_install_list(std::string name, std::string version);
 extern void calculate_users_packages();
 extern std::unordered_map<std::string,std::string> user_installed_list;
 extern void cleanup_directory(std::string);
@@ -105,7 +105,7 @@ static void xpac_init(){
 	//Handling the metadata directory:
 	xpac_dir_handler(metadata_dir);
 	//Getting the latest updates from xpac:
-	update_from_server();
+	update_file_handler();
 	//Handling the base package:
 	base_handler();
 	//Parsing the universe:
@@ -149,6 +149,9 @@ static void install_all_packages(){
 	while(!dep_list.empty()){
 		std::string to_install = dep_list.top();
 		std::string to_display = to_install.substr(0,to_install.find("/"));
+		curr = metadata::get_package(to_display + "/.metadata");
+		std::string curr_version = curr->get_pkg_ver();
+		metadata::write_package(curr, metadata_dir.c_str());
 		//cleanup_directory(to_display);
 		dep_list.pop();
 		std::cout<<"Installing package: "<<to_display<<std::endl;
@@ -168,7 +171,7 @@ static void install_all_packages(){
 				}
 				exit(1);
 			} else {
-				add_to_install_list(to_display); //Adding to the list of successfully installed packages
+				add_to_install_list(to_display, curr_version); //Adding to the list of successfully installed packages
 			}
 		}
 	}
@@ -233,11 +236,13 @@ int main(int argc, char ** argv){
 
 		char * pkg_name = strdup(argv[2]);
 
+		//Checking if package available in the repository:
 		auto find_itr = universe_list.find(std::string(pkg_name));
 		if(find_itr == universe_list.end()){	//Package not available to install in the repo!
 			std::cout<<"Sorry, package not available in the repository! Please check the website for more information!"<<std::endl;
 			exit(0);
 		}
+
 		//Installing the package:
 		install_package(pkg_name);
 	}

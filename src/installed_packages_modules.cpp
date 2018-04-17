@@ -18,12 +18,12 @@ void calculate_users_packages(){
 	file.close();
 }
 
-void add_to_install_list(std::string str) {
+void add_to_install_list(std::string name, std::string version) {
 	std::fstream file;
 	file.open(installed_file, std::ios::out | std::ios::app);
 
 	// Simply appending to file
-	file << str << "\n";
+	file << name << " " << version <<"\n";
 
 	file.close();
 }
