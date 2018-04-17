@@ -30,7 +30,7 @@
 *.exe
 *.out
 *.app
-./compression/packR
+LZWcompression/packR
 
 # Log Files
 *.log
