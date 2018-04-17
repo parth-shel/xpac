@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
 	int num_requests = atoi(argv[1]);
 
 	// install signal handler
-	// signal (SIGCHLD, sig_chld);
+	signal (SIGCHLD, sig_chld);
 	
 	for(int i = 0;i < num_requests;i++) {
 		pid_t child_pid;
