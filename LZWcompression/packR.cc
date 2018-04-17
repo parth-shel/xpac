@@ -23,7 +23,7 @@ void pack(std::string file_path) {
 	
 	std::string rm_command("rm -f ");
 	rm_command.append(tar_path);
-	// system(rm_command.c_str());
+	system(rm_command.c_str());
 	
 	return;
 }
@@ -50,6 +50,11 @@ void unpack(std::string file_path) {
 		std::cout << "untar error" << std::endl;
 		return;
 	}
+	
+	std::string rm_command("rm -f ");
+	rm_command.append(file_path);
+	system(rm_command.c_str());
+	
 	return;
 }
 
