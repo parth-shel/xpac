@@ -1,133 +1,130 @@
-#include <string>
-#include <map>
-
-// Compress a string to a list of output symbols.
-// The result will be written to the output iterator
-// starting at "result"; the final iterator is returned.
-template <typename Iterator>
-Iterator compress(const std::string &uncompressed, Iterator result) {
-	// Build the dictionary.
-	int dictSize = 256;
-	std::map<std::string,int> dictionary;
-	for (int i = 0; i < 256; i++)
-		dictionary[std::string(1, i)] = i;
-
-	std::string w;
-	for (std::string::const_iterator it = uncompressed.begin();
-			it != uncompressed.end(); ++it) {
-		char c = *it;
-		std::string wc = w + c;
-		if (dictionary.count(wc))
-			w = wc;
-		else {
-			*result++ = dictionary[w];
-			// Add wc to the dictionary.
-			dictionary[wc] = dictSize++;
-			w = std::string(1, c);
-		}
-	}
-
-	// Output the code for w.
-	if (!w.empty())
-		*result++ = dictionary[w];
-	return result;
-}
-
-// Decompress a list of output ks to a string.
-// "begin" and "end" must form a valid range of ints
-template <typename Iterator>
-std::string decompress(Iterator begin, Iterator end) {
-	// Build the dictionary.
-	int dictSize = 256;
-	std::map<char,std::string> dictionary;
-	for (int i = 0; i < 256; i++)
-		dictionary[(char)i] = std::string(1, i);
-
-	std::string w(1, *begin++);
-	std::string result = w;
-	std::string entry;
-	for ( ; begin != end; begin++) {
-		char k = *begin;
-		if (dictionary.count(k))
-			entry = dictionary[k];
-		else if (k == dictSize)
-			entry = w + w[0];
-		else
-			throw "Bad compressed k";
-
-		result += entry;
-
-		// Add w+entry[0] to the dictionary.
-		dictionary[dictSize++] = w + entry[0];
-
-		w = entry;
-	}
-	return result;
-}
+//  Compile with gcc 4.7.2 or later, using the following command line:
+//
+//    g++ -std=c++0x lzw.c -o lzw
+//
+//LZW algorithm implemented using fixed 12 bit codes.
 
 #include <iostream>
+#include <sstream>
 #include <fstream>
-#include <iterator>
-#include <vector>
 
-int main(int argc, char** argv) {
-	if(argc != 2) {
-		std::cout << "usage: lzw <file_name>" << std::endl;
-		return -1;
-	}
+#include <bitset>
+#include <string>
+#include <unordered_map>
 
-	// read from uncompressed file
-	std::string file_path(argv[1]);
-	std::ifstream input_file(file_path, std::ios::in | std::ios::binary);
-	if(!input_file.good()) {
-		std::cout << "file error!" << std::endl;
-	}
-	std::string* buf;
-	if(input_file.is_open()) {
-		buf = new std::string((std::istreambuf_iterator<char>(input_file)), std::istreambuf_iterator<char>());
-	}
-	input_file.close();
-	std::cout << "read: " << buf->length() << std::endl;
+#define MAX_DEF 4096
 
-	// compress
-	std::vector<char> compressed;
-	compress(*buf, std::back_inserter(compressed));
-	delete buf;
-	
-	// write compressed version
-	std::string compressed_path (file_path);
-	compressed_path.append(".lzw");
-	std::ofstream compressed_file(compressed_path, std::ios::out | std::ios::trunc);
-	// copy(compressed.begin(), compressed.end(), std::ostream_iterator<int>(compressed_file));
-	for(std::vector<char>::iterator itr = compressed.begin(); itr != compressed.end(); ++itr) {
-		//char c = (*itr);
-		compressed_file << (*itr);
-	}
-	// std::string str(compressed.begin(), compressed.end());
-	// compressed_file << str;
-	compressed_file.close();
-	std::cout  << "compressed: "  << compressed.size() << std::endl;
-	
-	// read compressed file
-	/*compressed.clear();
-	std::ifstream compressed_file_read(compressed_path, std::ios::in | std::ios::binary);
-	// buf = new std::string((std::istreambuf_iterator<char>(compressed_file_read)), std::istreambuf_iterator<char>());
-	char c;
-	while(compressed_file_read.get(c)) {
-		compressed.push_back(c);
-	}*/
-	
-	// write decompressed version
-	std::string decompressed_path(file_path);
-	decompressed_path.append(".wzl");
-	std::ofstream decompressed_file(decompressed_path, std::ios::out | std::ios::trunc);
-	
-	// decompress
-	std::string decompressed = decompress(compressed.begin(), compressed.end());
-	
-	decompressed_file << decompressed;
-	decompressed_file.close();
-	std::cout << "decompressed: " << decompressed.length() << std::endl;
+using namespace std;
 
+string convert_int_to_bin(int number) {
+	string result = bitset<12>(number).to_string();
+	return result;
+}
+
+void compress(string input, int size, string filename) {
+	unordered_map<string, int> compress_dictionary(MAX_DEF);
+	//Dictionary initializing with ASCII
+	for ( int unsigned i = 0 ; i < 256 ; i++ ){
+		compress_dictionary[string(1,i)] = i;
+	}
+	string current_string;
+	unsigned int code;
+	unsigned int next_code = 256;
+	//Output file for compressed data
+	ofstream outputFile;
+	outputFile.open(filename + ".lzw");
+
+	for(char& c: input){
+		current_string = current_string + c;
+		if ( compress_dictionary.find(current_string) ==compress_dictionary.end() ){
+			if (next_code <= MAX_DEF)
+				compress_dictionary.insert(make_pair(current_string, next_code++));
+			current_string.erase(current_string.size()-1);
+			outputFile << convert_int_to_bin(compress_dictionary[current_string]);
+			current_string = c;
+		}   
+	}   
+	if (current_string.size())
+		outputFile << convert_int_to_bin(compress_dictionary[current_string]);
+	outputFile.close();
+}
+
+
+
+void decompress(string input, int size, string filename) {
+	unordered_map<unsigned int, string> dictionary(MAX_DEF);
+	//Dictionary initializing with ASCII
+	for ( int unsigned i = 0 ; i < 256 ; i++ ){
+		dictionary[i] = string(1,i);
+	}
+	string previous_string;
+	unsigned int code;
+	unsigned int next_code = 256;
+	//Output file for decompressed data
+	ofstream outputFile;
+	outputFile.open(filename + ".wzl");
+
+	int i =0;
+	while (i<size){
+		//Extracting 12 bits and converting binary to decimal
+		string subinput = input.substr(i,12);
+		bitset<12> binary(subinput);
+		code = binary.to_ullong();
+		i+=12;
+
+		if ( dictionary.find(code) ==dictionary.end() ) 
+			dictionary.insert(make_pair(code,(previous_string + previous_string.substr(0,1))));
+		outputFile<<dictionary[code];
+		if ( previous_string.size())
+			dictionary.insert(make_pair(next_code++,previous_string + dictionary[code][0])); 
+		previous_string = dictionary[code];
+	}
+	outputFile.close();
+}
+
+string convert_char_to_string(const char *pCh, int arraySize) {
+	string str;
+	if (pCh[arraySize-1] == '\0') str.append(pCh);
+	else for(int i=0; i<arraySize; i++) str.append(1,pCh[i]);
+	return str;
+}
+
+static void show_usage() {
+	cerr << "Usage: \n"
+		<< "Specify the file that needs to be compressed or decompressed\n"
+		<<"lzw -c input    #compress file input\n"
+		<<"lzw -d input    #decompress file input\n";
+}
+
+
+int main (int argc, char* argv[]) {
+	streampos size;
+	char * memblock;
+
+	if (argc <2)
+	{
+		show_usage();   
+		return(1);
+	}
+	ifstream file (argv[2], ios::in|ios::binary|ios::ate);
+	if (file.is_open())
+	{
+		size = file.tellg();
+		memblock = new char[size];
+		file.seekg (0, ios::beg);
+		file.read (memblock, size);
+		file.close();
+		string input = convert_char_to_string(memblock,size);
+		if (string( "-c" ) == argv[1] )
+			compress(input,size, argv[2]);
+		else if (string( "-d" ) == argv[1] )
+			decompress(input,size, argv[2]);
+		else
+			show_usage();
+	}
+	else {
+		cout << "Unable to open file."<<endl;
+		show_usage();
+	}
 	return 0;
 }
