@@ -30,17 +30,10 @@
 *.exe
 *.out
 *.app
-./xpac-server/xpac-server
-./xapc-server/test-client
-./xpac-server/generate-universe
-./xpac-server/generate-metadata
+./compression/packR
 
 # Log Files
 *.log
 
 # Swap Files
 *.swp
-
-# Repo
-./xpac-server/repo
-./xpac-server/repo/*
