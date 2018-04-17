@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <string.h>
+#include <errno.h>
 #include <libtar.h>
 #include <fcntl.h>
 
@@ -10,15 +12,19 @@ int tar(const char* path, const char* tar_path) {
 	char *src_dir = (char*) path;
 	char *extract_to = (char*) path;
 	if(tar_open(&tar_file, tar_file_name, NULL, O_WRONLY | O_CREAT, 0644, TAR_IGNORE_MAGIC) != 0) {
+		fprintf(stderr, "tar_open(): %s\n", strerror(errno));
 		return -1;
 	}
 	if(tar_append_tree(tar_file, src_dir, extract_to) != 0) {
+		fprintf(stderr, "tar_append_tree(): %s\n", strerror(errno));
 		return -1;
 	}
 	if(tar_append_eof(tar_file) != 0) {
+		fprintf(stderr, "tar_append_eof(): %s\n", strerror(errno));
 		return -1;
 	}
 	if(tar_close(tar_file) != 0) {
+		fprintf(stderr, "tar_close(): %s\n", strerror(errno));
 		return -1;
 	}
 
@@ -29,13 +35,16 @@ int untar(const char* path, const char* untar_path) {
 	TAR * tar_file;
 	char* tar_file_name = (char*) path;
 	char* extract_to = (char*) untar_path;
-	if (tar_open(&tar_file, tar_file_name, NULL, O_RDONLY, 0, TAR_IGNORE_MAGIC) != 0) {
+	if (tar_open(&tar_file, tar_file_name, NULL, O_RDONLY, 0644, TAR_IGNORE_MAGIC) != 0) {
+		fprintf(stderr, "tar_open(): %s\n", strerror(errno));
 		return -1;
 	}
 	if (tar_extract_all(tar_file, extract_to) != 0) {
+		fprintf(stderr, "tar_extract_all(): %s\n", strerror(errno));
 		return -1;
 	}
 	if (tar_close(tar_file) != 0) {
+		fprintf(stderr, "tar_close(): %s\n", strerror(errno));
 		return -1;
 	}
 
