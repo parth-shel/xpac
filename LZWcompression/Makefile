@@ -1,7 +1,13 @@
-goal: LZW
+goal: packR
 
-LZW:
-	g++ -g -o LZW lzw.cc
+pack=packR.cc
+lzw=lzw.cc
+tar=tar.c
+
+flags=-ltar
+
+packR:
+	g++ -g -o packR ${pack} ${lzw} ${tar} ${flags}
 
 clean:
-	rm -f LZW
+	rm -f packR

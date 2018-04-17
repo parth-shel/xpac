@@ -1,7 +1,3 @@
-//  Compile with gcc 4.7.2 or later, using the following command line:
-//
-//    g++ -std=c++0x lzw.c -o lzw
-//
 //LZW algorithm implemented using fixed 12 bit codes.
 
 #include <iostream>
@@ -11,6 +7,8 @@
 #include <bitset>
 #include <string>
 #include <unordered_map>
+
+#include "lzw.hh"
 
 #define MAX_DEF 4096
 
@@ -62,7 +60,9 @@ void decompress(string input, int size, string filename) {
 	unsigned int next_code = 256;
 	//Output file for decompressed data
 	ofstream outputFile;
-	outputFile.open(filename + ".wzl");
+	if(filename.find(".lzw") !=  string::npos && filename.length() > 4)
+		filename.erase(filename.length() - 4, 4);
+	outputFile.open(filename);
 
 	int i =0;
 	while (i<size){
@@ -89,7 +89,43 @@ string convert_char_to_string(const char *pCh, int arraySize) {
 	return str;
 }
 
-static void show_usage() {
+bool compress_file(string filename) {
+	streampos size;
+	char * memblock;
+	ifstream file(filename, ios::in | ios::binary | ios::ate);
+	if(file.is_open()) {
+		size = file.tellg();
+		memblock = new char[size];
+		file.seekg(0, ios::beg);
+		file.read(memblock, size);
+		file.close();
+		string input = convert_char_to_string(memblock, size);
+		compress(input, size, filename);
+		delete memblock;
+		return true;
+	}
+	return false;
+}
+
+bool decompress_file(string filename) {
+	streampos size;
+	char * memblock;
+	ifstream file(filename, ios::in | ios::binary | ios::ate);
+	if(file.is_open()) {
+		size = file.tellg();
+		memblock = new char[size];
+		file.seekg(0, ios::beg);
+		file.read(memblock, size);
+		file.close();
+		string input = convert_char_to_string(memblock, size);
+		decompress(input, size, filename);
+		delete memblock;
+		return true;
+	}
+	return false;
+}
+
+/*static void show_usage() {
 	cerr << "Usage: \n"
 		<< "Specify the file that needs to be compressed or decompressed\n"
 		<<"lzw -c input    #compress file input\n"
@@ -121,10 +157,11 @@ int main (int argc, char* argv[]) {
 			decompress(input,size, argv[2]);
 		else
 			show_usage();
+		delete memblock;
 	}
 	else {
 		cout << "Unable to open file."<<endl;
 		show_usage();
 	}
 	return 0;
-}
+}*/
