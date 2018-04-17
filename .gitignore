@@ -30,10 +30,9 @@
 *.exe
 *.out
 *.app
-xpac-server
-test-client
-generate-universe
-generate-metadata
+
+# Swap Files
+*.swp
 
 # Log Files
 *.log

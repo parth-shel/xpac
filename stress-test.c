@@ -1,5 +1,5 @@
 /**
- *	test-client
+ *	stress testing
  *	
  * @author: parth_shel
  * @version: v:0.1 Feb 11, 2018
@@ -25,10 +25,14 @@ int main(int argc, char* argv[]) {
  	int sock_fd;
  	struct sockaddr_in srv_addr;
 
- 	if (argc < 3) {
- 		printf("usage: %s <filename> <IP address> [port number]\n", argv[0]);
+ 	if (argc < 4) {
+ 		printf("usage: %s <num_requests> <server-endpoint> <IP address> [port number]\n", argv[0]);
 		exit(EXIT_FAILURE);
  	}
+
+	int num_requests = stoi(argv[1]);
+
+	for(int i = 0;i < num_requests;i++) {
  	
 	memset(&srv_addr, 0, sizeof(srv_addr));
 
@@ -38,7 +42,7 @@ int main(int argc, char* argv[]) {
 
 	// DNS lookup
 	char * IP = (char *) malloc(128 * sizeof(char));
-	if( hostname_to_ip(argv[2], IP) < 0 ) {
+	if( hostname_to_ip(argv[3], IP) < 0 ) {
 		printf("DNS lookup failure\n");
 		exit(EXIT_FAILURE);
 	}
@@ -50,7 +54,7 @@ int main(int argc, char* argv[]) {
  	}
 
  	// use specified port number or default otherwise
- 	srv_addr.sin_port = (argc > 3) ? htons(atoi(argv[3])) : htons(SRV_PORT);
+ 	srv_addr.sin_port = (argc > 4) ? htons(atoi(argv[4])) : htons(SRV_PORT);
 
  	if( connect(sock_fd, (struct sockaddr*) &srv_addr, sizeof(srv_addr)) < 0 ) {
  		perror("connect error");
@@ -60,7 +64,7 @@ int main(int argc, char* argv[]) {
  		printf("connected to:%s:%d ..\n",argv[2],SRV_PORT);
  	}
  
-	if( recv_file(sock_fd, argv[1]) < 0 ) { // argv[1] = file name
+	if( recv_file(sock_fd, argv[2]) < 0 ) { // argv[2] = file name
 		perror("receive error\n");
 		exit(EXIT_FAILURE);
 	}
@@ -70,6 +74,7 @@ int main(int argc, char* argv[]) {
  		perror("socket close error");
  		exit(EXIT_FAILURE);
  	}
+	}
  
 	return EXIT_SUCCESS;
 }
