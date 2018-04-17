@@ -7,7 +7,7 @@ tar=tar.c
 flags=-ltar
 
 packR:
-	g++ -g -o packR ${pack} ${lzw} ${tar} ${flags}
+	g++ -std=c++17 -g -o packR ${pack} ${lzw} ${tar} ${flags}
 
 clean:
 	rm -f packR
