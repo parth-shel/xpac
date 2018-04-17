@@ -38,6 +38,9 @@
 # Log Files
 *.log
 
+# Swap Files
+*.swp
+
 # Repo
 ./xpac-server/repo
 ./xpac-server/repo/*
