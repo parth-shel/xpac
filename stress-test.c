@@ -85,7 +85,10 @@ int main(int argc, char* argv[]) {
 		}
 	}
 	
-	while(1);
+	// while(1);
+	for(int i = 0;i < num_requests;i++) {
+		wait(NULL);
+	}
 
 	return EXIT_SUCCESS;
 }
