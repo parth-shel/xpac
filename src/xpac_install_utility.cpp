@@ -2,28 +2,30 @@
 #include <fstream>
 #include <sstream>
 #include <cstring>
-#include <set>
+#include <map>
 #include <iterator>
 #include <string>
 
 using namespace std;
 
-set<string> universe_list;
+map<string,string> universe_list;
 
-void parse_universe_of_packages(string, int);
+void parse_universe_of_packages(string);
 void print_package_set();
 
 void print_package_set() {
 	for(auto itr = universe_list.begin(); itr != universe_list.end(); itr++) {
-		cout<<*itr<<endl;
+		cout<<(itr->first)<<" "<<(itr->second)<<endl;
 	}
 }
 
-void parse_universe_of_packages(string filename, int flag) {
+void parse_universe_of_packages(string filename) {
 	// assuming relative filepath
 	// file resides in same directory as xpac_install_utility executable
 	// change accordingly to the needs
 	ifstream file(filename.c_str());
+	string name;
+	string version;
 	if(file.is_open()) {
 		string line;
 		string token;
@@ -34,14 +36,15 @@ void parse_universe_of_packages(string filename, int flag) {
 			getline(stream, token, ',');
 			// parse package name
 			getline(stream, token, ',');
-			universe_list.insert(token);// add package name to set
+			name = token;
 			// parse package version
 			getline(stream, token, ',');
+			version = token;
+			universe_list.insert(make_pair(name,version));// add package name to set
 			// parse executable name
 			getline(stream, token, '\n');
 		} 
 	} else {
-		if(!flag)
-		cout<<"Latest updates are not found! Please run xpac -update your local package database!"<<endl;
+		cout<<"Local package database not found!"<<endl;
 	}
 }

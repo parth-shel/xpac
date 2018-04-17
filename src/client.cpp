@@ -13,11 +13,16 @@
 #include <stack>
 #include <queue>
 #include <set>
+#include <map>
+#include <unordered_map>
 #include <unordered_set>
+#include <fstream>
 #include <unistd.h>
 #include <sys/types.h>
 #include <dirent.h>
 #include <pwd.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "metadata.h"
 
@@ -25,6 +30,7 @@
 struct passwd *pw = getpwuid(getuid());
 const char *homedir = pw->pw_dir;
 std::string xpac_dir = std::string(homedir) +std::string("/.xpac/");
+std::string metadata_dir = xpac_dir + ".metadata";
 std::string universe_file = xpac_dir + std::string("universe_of_packages.csv");
 
 //Global variables and extern functions:
@@ -33,14 +39,18 @@ std::hash<std::string> str_hash;
 extern int build(std:: string command);
 extern void man_help();
 extern int client_driver(char * request, char * ip);
-extern void parse_universe_of_packages(std::string, int);
+extern void parse_universe_of_packages(std::string);
 extern void print_package_set();
-extern std::set<std::string> universe_list;
+extern std::map<std::string,std::string> universe_list;
 extern void print_package_set();
 extern void add_to_install_list(std::string str);
 extern void calculate_users_packages();
-extern std::unordered_set<std::string> user_installed_list;
+extern std::unordered_map<std::string,std::string> user_installed_list;
 extern void cleanup_directory(std::string);
+
+//Important metadata objects:
+metadata * base;
+metadata * curr;
 
 std::string metadata_path;
 std::string install_path;
@@ -49,22 +59,60 @@ std::stack<std::string> dep_list;
 std::queue<std::string> bfs_queue;
 std::unordered_set<std::string> marked;
 
-static inline void xpac_dir_handler(){
-	DIR* dir = opendir(xpac_dir.c_str());
+static inline void update_from_server(){
+	client_driver(strdup("GUNI"),strdup("repo.xpac.tech"));
+	rename("GUNI",universe_file.c_str());
+}
+
+static inline void xpac_dir_handler(std::string filepath){
+	DIR* dir = opendir(filepath.c_str());
 	if (dir)
 	{
 		closedir(dir);  //Directory exists and we don't need to so anything
 	}
 	else if (ENOENT == errno)
 	{
-		/* Directory does not exist. So we need to create it */
-		mkdir(xpac_dir.c_str(),0775);
+		//Directory does not exist. So we need to create it
+		std::cout<<"Creating the directory: "<<filepath<<std::endl;
+		mkdir(filepath.c_str(),0775);
 	}
 }
 
-static inline void update_from_server(){
-	client_driver(strdup("GUNI"),strdup("repo.xpac.tech"));
-	rename("GUNI",universe_file.c_str());
+inline bool file_exists (const std::string& name) {
+	std::ifstream f(name.c_str());
+	return f.good();
+}
+
+static inline void base_handler(){
+	std::string base_filepath = metadata_dir + "/." + "base"; 
+	if(!file_exists(base_filepath)) {
+		base = new metadata("base","v:0.0.0");
+		metadata::write_package(base, metadata_dir.c_str());
+	} else {
+		base = metadata::get_package(base_filepath);
+	}
+}
+
+static inline void update_file_handler(){
+	if(!file_exists(universe_file)){
+		update_from_server();
+	}
+}
+
+static void xpac_init(){
+	//Handling the xpac directory:
+	xpac_dir_handler(xpac_dir);
+	//Handling the metadata directory:
+	xpac_dir_handler(metadata_dir);
+	//Getting the latest updates from xpac:
+	update_from_server();
+	//Handling the base package:
+	base_handler();
+	//Parsing the universe:
+	parse_universe_of_packages(universe_file);
+	//Calculating the users' packages:
+	calculate_users_packages();
+
 }
 
 static inline void untar_file(std::string filename) {
@@ -101,7 +149,7 @@ static void install_all_packages(){
 	while(!dep_list.empty()){
 		std::string to_install = dep_list.top();
 		std::string to_display = to_install.substr(0,to_install.find("/"));
-		cleanup_directory(to_display);
+		//cleanup_directory(to_display);
 		dep_list.pop();
 		std::cout<<"Installing package: "<<to_display<<std::endl;
 		if(user_installed_list.find(to_display) != user_installed_list.end()) {
@@ -175,11 +223,8 @@ int main(int argc, char ** argv){
 	}
 
 	//Initializing:
-	xpac_dir_handler();
-	int flag = (!strcmp(argv[1],"-update"))?1:0;
-	parse_universe_of_packages(universe_file,flag);
-	calculate_users_packages();
-
+	xpac_init();
+	
 	if(!strcmp(argv[1],"-install")){
 		if(argc<3){
 			print_err(2);

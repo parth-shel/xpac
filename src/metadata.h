@@ -24,10 +24,9 @@ class metadata{
 	std::string get_info();
 
 	//Static functions for basic file io:
-	static void write_package(metadata * package);
+	static void write_package(metadata * package, std::string filepath);
 	static metadata * get_package(std::string filepath);
 
-	//For debugging purposes only:
 	void add_dep_pkg(std::string pkg_name);
 };
 

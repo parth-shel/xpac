@@ -26,9 +26,9 @@ std::vector<std::string> * metadata::get_dep_list(){
 	return this->dep_list;
 }
 
-void metadata::write_package(metadata * package){
+void metadata::write_package(metadata * package, std::string filepath){
 	std::ofstream file_object;
-	std::string filepath = std::string(".metadata");	//Filename consists of package name and a metadata
+	filepath = filepath + "/." + package->pkg_name + std::string(".metadata");	//Filename consists of package name and a metadata
 	file_object.open(filepath.c_str(),std::ios::out | std::ios::trunc);
 	file_object << package->pkg_name << "\n" << package->pkg_ver << "\n" << package->pkg_id << "\n";
 	for(auto&& itr = package->dep_list->begin(); itr!=package->dep_list->end(); itr++)
