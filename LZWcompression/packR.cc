@@ -26,9 +26,14 @@ void unpack(std::string file_path) {
 		std::cout << "lzw decompression error" << std::endl;
 		return;
 	}
-	if(file_path.find(".tar") != std::string::npos && file_path.length() > 4)
+	
+	if(file_path.find(".lzw") != std::string::npos && file_path.length() > 4)
 		file_path.erase(file_path.length() - 4, 4);
-	if(untar(file_path.c_str()) < 0) {
+	std::string untar_path(file_path);
+	if(untar_path.find(".tar") != std::string::npos && untar_path.length() > 4)
+		untar_path.erase(untar_path.length() - 4, 4);
+	
+	if(untar(file_path.c_str(), untar_path.c_str()) < 0) {
 		std::cout << "untar error" << std::endl;
 		return;
 	}
