@@ -35,28 +35,34 @@ std::string update_file = xpac_dir + ".updates";
 
 //Global variables and extern functions:
 std::hash<std::string> str_hash;
-
 extern int build(std:: string command);
 extern void man_help();
 extern int client_driver(char * request, char * ip);
 extern void parse_universe_of_packages(std::string);
 extern void print_package_set(std::map<std::string, std::string>& to_print);
-extern std::map<std::string,std::string> universe_list;
 extern void add_to_install_list(std::string name, std::string version);
 extern void calculate_users_packages();
-extern std::map<std::string,std::string> user_installed_list;
 extern void cleanup_directory(std::string);
+
+//Installation lists:
+extern std::map<std::string,std::string> user_installed_list;
+extern std::map<std::string,std::string> universe_list;
 
 //Important metadata objects:
 metadata * base;
 metadata * curr;
 
+//Important file paths:
 std::string metadata_path;
 std::string install_path;
 
+//Important dependency tree data structures:
 std::stack<std::string> dep_list;
 std::queue<std::string> bfs_queue;
 std::unordered_set<std::string> marked;
+
+//Important indegree calculations::
+std::map<std::string, int> indegree_map;
 
 static inline void update_from_server(){
 	client_driver(strdup("GUNI"),strdup("repo.xpac.tech"));
@@ -83,7 +89,7 @@ inline bool file_exists (const std::string& name) {
 }
 
 static inline void base_handler(){
-	std::string base_filepath = metadata_dir + "/." + "base"; 
+	std::string base_filepath = metadata_dir + "/." + "base" + ".metadata"; 
 	if(!file_exists(base_filepath)) {
 		base = new metadata("base","v:0.0.0");
 		metadata::write_package(base, metadata_dir.c_str());
@@ -142,7 +148,7 @@ static inline void print_err(int errflag){
 	if(errflag == 2)	printf("Wrong number of arguments; please type xpac -help for help\n");
 }
 
-static void install_all_packages(){
+static bool install_all_packages(){
 
 	while(!dep_list.empty()){
 		std::string to_install = dep_list.top();
@@ -173,9 +179,12 @@ static void install_all_packages(){
 			}
 		}
 	}
+
+	//Successfully installed all of them:
+	return true;
 }
 
-static void install_package(const char * pkg_name){
+static bool install_package(const char * pkg_name){
 	//Getting the package from the server itself:
 	get_from_server("GPKG-",pkg_name);
 
@@ -214,7 +223,7 @@ static void install_package(const char * pkg_name){
 	}
 
 	//Finally installing everything in the stack:
-	install_all_packages();
+	return install_all_packages();
 }
 
 void calculate_differences() {
@@ -283,6 +292,62 @@ void upgrade_all_packages() {
 
 }
 
+void terminate(std::string pkg_name){
+	base->add_dep_pkg(pkg_name);
+	metadata::write_package(base, metadata_dir.c_str());
+	exit(0);
+}
+
+void calculate_indegrees() {
+	indegree_map.clear();
+	//Adding all the installed packages to the map:
+	for(auto itr = user_installed_list.begin(); itr!=user_installed_list.end(); itr++) {
+		indegree_map.insert(std::make_pair(itr->first,0));
+	}
+
+	//Performing a breadth first search on the graph to see all reachable packages:
+	std::queue<std::string> bfs_indegree_queue;
+	std::unordered_set<std::string> indegree_visited;
+
+	//Pushing the first element into the bfs_queue:
+	bfs_indegree_queue.push("base");
+	indegree_visited.insert("base");
+
+	//Performing the bfs here:
+	while(!bfs_indegree_queue.empty()){
+		std::string next_pkg_name = bfs_indegree_queue.front();
+		bfs_indegree_queue.pop();
+
+		std::string next_pkg_filepath = metadata_dir + "/." + next_pkg_name + ".metadata";
+		metadata * next_pkg = metadata::get_package(next_pkg_filepath);
+
+		//Getting the dependency list of the next package:
+		std::vector<std::string> * next_pkg_dep_list = next_pkg->get_dep_list();
+
+		for(auto itr = next_pkg_dep_list->begin(); itr!=next_pkg_dep_list->end(); itr++) {
+			
+			//Updating indegree values in the map:
+			auto indegree_find = indegree_map.find(*itr);
+			if(indegree_find != indegree_map.end()) {
+				indegree_find->second++;
+			}
+
+			//Finding whether it has already been visited:
+			auto found = indegree_visited.find(*itr);
+			//If not found then:
+			if(found == indegree_visited.end()) {
+				indegree_visited.insert(*itr);
+				bfs_indegree_queue.push(*itr);
+			}
+		}
+	}
+
+	//Testing calculating indegrees:
+	for(auto itr=indegree_map.begin(); itr!=indegree_map.end(); itr++){
+		std::cout<<"Node: "<<itr->first<<" "<<"Value: "<<itr->second<<std::endl;
+	}
+}
+
 int main(int argc, char ** argv){
 	if(argc<2){
 		print_err(1);
@@ -308,7 +373,13 @@ int main(int argc, char ** argv){
 		}
 
 		//Installing the package:
-		install_package(pkg_name);
+		bool result = install_package(pkg_name);
+
+		//Terminating:
+		if(result)
+			terminate(pkg_name);
+		else
+			exit(1);	//Should not reach here!
 	}
 	else if(!strcmp(argv[1],"-update")){
 		std::cout<<"Updating xpac"<<std::endl;
@@ -328,6 +399,9 @@ int main(int argc, char ** argv){
 	}
 	else if(!strcmp(argv[1],"-help")){
 		man_help();
+	}
+	else if(!strcmp(argv[1],"-indeg")){
+		calculate_indegrees();
 	}
 	return 0;
 }
