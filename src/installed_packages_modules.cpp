@@ -29,3 +29,14 @@ void add_to_install_list(std::string name, std::string version) {
 
 	file.close();
 }
+
+void rewrite_installed_packages(){
+	std::fstream file;
+	file.open(installed_file, std::ios::out | std::ios::trunc);
+
+	for(auto itr = user_installed_list.begin(); itr!=user_installed_list.end(); itr++) {
+		file << itr->first << " " << itr->second << "\n";
+	}
+
+	file.close();
+}

@@ -16,12 +16,14 @@
 #include <map>
 #include <unordered_set>
 #include <fstream>
+#include <algorithm>
 #include <unistd.h>
 #include <sys/types.h>
 #include <dirent.h>
 #include <pwd.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <stdio.h>
 
 #include "metadata.h"
 
@@ -43,6 +45,7 @@ extern void print_package_set(std::map<std::string, std::string>& to_print);
 extern void add_to_install_list(std::string name, std::string version);
 extern void calculate_users_packages();
 extern void cleanup_directory(std::string);
+extern void rewrite_installed_packages();
 
 //Installation lists:
 extern std::map<std::string,std::string> user_installed_list;
@@ -329,7 +332,12 @@ void calculate_indegrees() {
 			//Updating indegree values in the map:
 			auto indegree_find = indegree_map.find(*itr);
 			if(indegree_find != indegree_map.end()) {
-				indegree_find->second++;
+				if(next_pkg_name.compare("base") == 0) { //One degree depth
+					indegree_find->second++;
+				}
+				else{
+					indegree_find->second += 2;
+				}
 			}
 
 			//Finding whether it has already been visited:
@@ -343,8 +351,66 @@ void calculate_indegrees() {
 	}
 
 	//Testing calculating indegrees:
-	for(auto itr=indegree_map.begin(); itr!=indegree_map.end(); itr++){
-		std::cout<<"Node: "<<itr->first<<" "<<"Value: "<<itr->second<<std::endl;
+	/*for(auto itr=indegree_map.begin(); itr!=indegree_map.end(); itr++){*/
+		//std::cout<<"Node: "<<itr->first<<" "<<"Value: "<<itr->second<<std::endl;
+	/*}*/
+}
+
+void remove_package(std::string pkg_name){
+	auto find = indegree_map.find(pkg_name);
+	if(find != indegree_map.end()){
+		if(find->second>1){
+			std::cout<<"Cannot delete "<<pkg_name<<" as it breaks a dependency";
+		}
+		else{
+			std::cout<<"Removing "<<pkg_name<<std::endl;
+			//Removing relevant metadata files:
+			remove(std::string(metadata_dir + "/." + pkg_name + ".metadata").c_str());
+			//Deleting it from the dependency list of base, if applicable:
+			base->get_dep_list()->erase(std::remove(base->get_dep_list()->begin(), base->get_dep_list()->end(), pkg_name), base->get_dep_list()->end());
+			//Rewriting base's metadata:
+			metadata::write_package(base, metadata_dir.c_str());
+			//Removing package from list of all installed packages:
+			user_installed_list.erase(user_installed_list.find(pkg_name));
+			//Rewriting the user installed packages list:
+			rewrite_installed_packages();
+		}
+	}
+}
+
+void remove_orphans(){
+
+	std::vector<std::string> to_remove;
+
+	for(auto itr=indegree_map.begin(); itr!=indegree_map.end(); itr++) {
+		if(itr->second == 0){
+			to_remove.push_back(itr->first);
+		}
+	}
+
+	if(to_remove.empty()){
+		std::cout<<"No orphaned packages found!";
+		exit(0);
+	}
+
+	std::cout<<"The following packages will be removed from the system: "<<std::endl;
+	for(auto str:to_remove) {
+		std::cout<<str<<std::endl;
+	}
+
+	char confirm;
+	do {
+		std::cout<<"Do you confirm?[Y/n]"<<std::endl;
+		std::cin>>confirm;
+	} while(confirm != 'Y' && confirm != 'n' && confirm != 'N' && confirm != 'y');
+
+	if(confirm == 'n' || confirm == 'N') {
+		exit(0);
+	}
+	else { //Deleting all packages:
+		for(auto str:to_remove){
+			remove_package(str);
+		}
 	}
 }
 
@@ -383,7 +449,7 @@ int main(int argc, char ** argv){
 	}
 	else if(!strcmp(argv[1],"-update")){
 		std::cout<<"Updating xpac"<<std::endl;
-		std::cout<<"Fetching updated pacakage list from server: "<<std::endl;
+		std::cout<<"Fetching updated package list from server: "<<std::endl;
 		update_from_server();
 		parse_universe_of_packages(universe_file);
 		std::cout<<"Calculating differences: "<<std::endl;
@@ -400,8 +466,13 @@ int main(int argc, char ** argv){
 	else if(!strcmp(argv[1],"-help")){
 		man_help();
 	}
-	else if(!strcmp(argv[1],"-indeg")){
+	else if(!strcmp(argv[1],"-remove")){
 		calculate_indegrees();
+		remove_package(argv[2]);
+	}
+	else if(!strcmp(argv[1],"-cleanup")){
+		calculate_indegrees();
+		remove_orphans();
 	}
 	return 0;
 }
