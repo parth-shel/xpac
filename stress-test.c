@@ -39,9 +39,7 @@ int main(int argc, char* argv[]) {
 	signal (SIGCHLD, sig_chld);
 	
 	for(int i = 0;i < num_requests;i++) {
-		pid_t child_pid;
-
-		if((child_pid = fork()) == 0) {
+		if(fork() == 0) {
 			memset(&srv_addr, 0, sizeof(srv_addr));
 
 			// create a client socket
