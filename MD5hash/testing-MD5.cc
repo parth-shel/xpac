@@ -17,7 +17,8 @@ int main(int argc, char* argv[]) {
 	MD5checksum* md52 = new MD5checksum(std::string("test2.txt"));
 	MD5checksum* md53 = new MD5checksum(std::string("test3.txt"));
 	MD5checksum* md54 = new MD5checksum(std::string("badtest.txt"));
-
+	MD5checksum* md55 = new MD5checksum(std::string("complexTest"));
+	
 	assert(md51->compare_hashes(md52));
 	std::cout << "files 1 and 2 are the same!" << std::endl;
 	std::cout << "\033[1;32m Test Case Passed \033[0m" << std::endl;
@@ -36,6 +37,9 @@ int main(int argc, char* argv[]) {
 	std::cout << "file 4 I/O error.." << std::endl;
 	std::cout << "\033[1;32m Test Case Passed \033[0m" << std::endl;
 	
+	md55->save_hash();
+
+
 	delete md51;
 	delete md52;
 	delete md53;
