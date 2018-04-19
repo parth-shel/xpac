@@ -8,10 +8,10 @@
     <meta name="HandheldFriendly" content="True">
 
     <!-- meta tag for favicon-->
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-	<link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.jpg" type="image/x-icon">
+    <link rel="icon" href="favicon.jpg" type="image/x-icon">
 
-	<meta name="description=" content="xpac - A Cross-platform Package Manager" />
+  <meta name="description=" content="xpac - A Cross-platform Package Manager" />
     <meta name="keywords" content="xpac,xpac.tech,xpac package manager,package manager" />
     <meta property="og:title" content="xpac - A Cross-platform Package Manager" />
     <meta property="og:url" content="http://xpac.tech/" />
@@ -20,7 +20,7 @@
     <meta property="og:description" content="A Cross-platform Package Manager" />
     <meta property="og:site_name" content="xpac.tech" />
 
-    <!-- SEO tags-->
+    <!-- SEO tags -->
     <meta name="msvalidate.01" content="A6C371E9029ADD73BE34E7D66246169E" />
     <meta name="google-site-verification" content="QXzDCAZ3LiIEt88BuwGMEvjzihk_EM_7igEjPRHEqmc" />
 
@@ -41,15 +41,15 @@
 
     <!-- Custom CSS styles -->
     <style>
-	  h1 {
-	  	font-size: 64px;
-		font-weight: bold;
-	  }
+    h1 {
+      font-size: 64px;
+    font-weight: bold;
+    }
 
-	  .inline {
-		display: inline-block;
-		margin: 30px;
-	  }
+    .inline {
+    display: inline-block;
+    margin: 30px;
+    }
 
       /* Coloring scheme for Font Awesome icon */
       a:link {
@@ -64,8 +64,12 @@
       a:active {
         color: #7f7f7f;
       }
+      /* Coloring scheme for IRC button being used to trigger modal */
+      .btn-link:hover {
+        color: #7f7f7f;
+      }
 
-      /*Coloring scheme for button */
+      /* Coloring scheme for button */
       .btn {
           color: #333333;
       }
@@ -136,24 +140,68 @@
         <!-- GitHub -->
         <div class="col-sm-12 col-md-12 col-lg-3 mobile-padding-adjustment">
           <a href="https://github.com/parth-shel/xpac/" target="_blank"><i class="fab fa-github-square fa-4x" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="GitHub"></i></a>
-          <p>Follow the development on GitHub.</p>
         </div>
 
         <!-- Feedback Form -->
         <div class="col-sm-12 col-md-12 col-lg-3 mobile-padding-adjustment">
           <a href="https://goo.gl/forms/W7dcJhD2TjRr2vL12" target="_blank"><i class="fas fa-comment-alt fa-4x" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Feedback Form"></i></a>
-          <p>Provide feedback or report bugs here.</p>
         </div>
 
         <!-- Download Link -->
         <div class="col-sm-12 col-md-12 col-lg-3 mobile-padding-adjustment">
           <a href="./xpac.tar.gz" target="_self"><i class="fas fa-file-archive fa-4x" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Download Tarball"></i></a>
-          <p>Download xpac here.</p>
         </div>
 
         <!-- IRC Channel details -->
         <div class="col-sm-12 col-md-12 col-lg-3 mobile-padding-adjustment">
-          <a href="https://google.com" target="_blank"><i class="fas fa-comments fa-4x" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="IRC Channel"></i></a>
+            <button class="btn btn-link" data-toggle="modal" data-target="#irc"><i class="fas fa-comments fa-4x" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="IRC Channel"></i></button>
+
+          <!-- Modal for instructions on IRC channel -->
+          <div class="modal fade" id="irc" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Connect to our IRC channel: Instructions</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <p>
+                    1. Use an <a href="https://en.wikipedia.org/wiki/Comparison_of_Internet_Relay_Chat_clients" target="_blank">IRC client</a> of your choice.
+                  </p>
+
+                  <p>
+                    2. Connect to our IRC server at <samp>irc.xpac.tech</samp> on port <samp>6667</samp>.
+                  </p>
+
+                  <p>
+                    3. Join the channel <samp>#xpacHelp</samp> to get in touch with other users and our developer team.
+                  </p>
+                </div> 
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="text-center row">
+        <div class="col-sm-12 col-md-12 col-lg-3 mobile-padding-adjustment">
+          <p>Follow the development on GitHub.</p>
+        </div>
+
+        <div class="col-sm-12 col-md-12 col-lg-3 mobile-padding-adjustment">
+          <p>Provide feedback or report bugs here.</p>
+        </div>
+
+        <div class="col-sm-12 col-md-12 col-lg-3 mobile-padding-adjustment">
+          <p>Download xpac here.</p>
+        </div>
+
+        <div class="col-sm-12 col-md-12 col-lg-3 mobile-padding-adjustment">
           <p>Connect to our IRC channel.</p>
         </div>
       </div>
