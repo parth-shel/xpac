@@ -87,6 +87,10 @@ int main(int argc, char* argv[]) {
 	for(int i = 0;i < num_requests;i++) {
 		wait(NULL);
 	}
+    
+    char command[64];
+    sprintf(command, "rm -f %s", argv[2]);
+    system(command);
 
 	return EXIT_SUCCESS;
 }
@@ -127,7 +131,7 @@ int recv_file(int sock, char* file_name) {
 	}
 
 	// create file to save received data.
-	if ( (fd = open(file_name, O_WRONLY|O_CREAT, 0755)) < 0 ) {
+	if ( (fd = open(file_name, O_WRONLY|O_CREAT, 0664)) < 0 ) {
 		perror("error creating file");
 		return -1;
 	}
