@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
 		wait(NULL);
 	}
     
-    char command[64];
+    char* command = (char*) malloc((7 + strlen(argv[2])) * sizeof(char));
     sprintf(command, "rm -f %s", argv[2]);
     system(command);
 
