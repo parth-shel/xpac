@@ -24,11 +24,13 @@ int main(int argc, char* argv[]) {
 	assert(md51->compare_hashes(md52));
 	std::cout << "files 1 and 2 are the same!" << std::endl;
 	std::cout << "\033[1;32m Test Case Passed \033[0m" << std::endl;
+	
+	std::cout << "\033[1;33m Test Case to check whether diferrent hash is calculated for different files \033[0m" << std::endl;
 	assert(!(md51->compare_hashes(md53)));
 	std::cout << "files 1 and 3 differ.." << std::endl;
 	std::cout << "\033[1;32m Test Case Passed \033[0m" << std::endl;
 	
-	std::cout << "\033[1;33m Test Case to check whether diferrent hash is calculated for different files \033[0m" << std::endl;
+	std::cout << "\033[1;33m Test Case to check whether the module can compare the hash of a file to a saved hash \033[0m" << std::endl;
 	std::string hash_path(std::string("test2.txt"));
 	hash_path.append(".md5hash");
 	md52->save_hash();
