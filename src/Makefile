@@ -1,11 +1,12 @@
 CC=gcc
 CPP=g++
 CFLAGS=-std=c99 -Wall -Wextra -pedantic -o
+SUFFIXFLAGS=-lssl -lcrypto
 CPPFLAGS=-std=c++11 -Wall -Wextra -pedantic -o
 DEBUGFLAGS=-g
 INSTALLDIR=/usr/local/bin
 MANPATH=/usr/share/man/man1
-CPPFILES=client.cpp client_socket.cpp man_help.cpp metadata.cpp xpac_install_utility.cpp installed_packages_modules.cpp cleanup_directory.cpp
+CPPFILES=client.cpp client_socket.cpp man_help.cpp metadata.cpp xpac_install_utility.cpp installed_packages_modules.cpp cleanup_directory.cpp MD5checksum.cc
 
 all: xpac
 
@@ -13,7 +14,7 @@ clean:
 	-rm xpac
 
 xpac:	$(CPPFILES)
-	$(CPP) $(CPPFLAGS) xpac $(CPPFILES)
+	$(CPP) $(CPPFLAGS) xpac $(CPPFILES) $(SUFFIXFLAGS)
 
 debug:	
 	$(CPP) $(DEBUGFLAGS) $(CPPFLAGS) xpac $(CPPFILES)

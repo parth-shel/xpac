@@ -26,6 +26,7 @@
 #include <stdio.h>
 
 #include "metadata.h"
+#include "MD5checksum.hh"
 
 //Initializing the home directory, and the users xpac directory:
 struct passwd *pw = getpwuid(getuid());
@@ -129,6 +130,7 @@ static inline void untar_file(std::string filename) {
 
 static inline void get_from_server(const char * command_to_server,const char * pkg_name){
 
+
 	std::string command = std::string(command_to_server);
 	std::string pkg_hash = std::to_string(str_hash(std::string(pkg_name))).c_str();
 	command.append(pkg_hash);
@@ -139,12 +141,32 @@ static inline void get_from_server(const char * command_to_server,const char * p
 		remove(final_command_to_server);
 		exit(1);
 	}
+
+	//Integrating MD5 Hashing comparing:
+	std::cout<<"Verifiying file integrity :"<<std::endl;
+	std::string MD5_command  = std::string(std::string("CHKSM-"));
+	MD5_command.append(pkg_hash);
+	char * MD5_command_to_server = (char*)MD5_command.c_str();
+	res = client_driver(MD5_command_to_server,strdup("repo.xpac.tech"));
+
+	if(res == -1){
+		remove(MD5_command.c_str());
+		exit(1);
+	}
+	MD5checksum * new_MD5 = new MD5checksum(final_command_to_server);
+	if(!new_MD5->compare_saved_hash(std::string(MD5_command_to_server))){
+			std::cout<<"File verification failed!!"<<std::endl;
+			exit(1);
+	}
 	
+	std::cout<<"File verification passed"<<std::endl;
+		
 	//To untar the recieved file:
 	untar_file(final_command_to_server);
 
-	//Removing the downloaded file from server:
+	//Removing the downloaded files from server:
 	remove(final_command_to_server);
+	remove(MD5_command_to_server);
 
 	//Setting metadata and install_paths
 	metadata_path = std::string(pkg_name) + std::string("/.metadata");
@@ -466,16 +488,23 @@ int main(int argc, char ** argv){
 		upgrade_all_packages();
 	}
 	else if(!strcmp(argv[1],"-list")){
+		if(argc > 2) {
+			if(!strcmp(argv[2],"--installed")){
+				if(user_installed_list.size() == 0){
+					std::cout<<"No packages installed on this system by xpac!"<<std::endl;
+					exit(0);
+				}
+				std::cout<<"Listing all packages installed on the system: "<<std::endl;
+				print_package_set(user_installed_list);
+				exit(0);
+			}
+			else{
+				print_err(1);
+				exit(1);
+			}
+		}
 		std::cout<<"Listing all packages available for installation: "<<std::endl;
 		print_package_set(universe_list);	
-	}
-	else if(!strcmp(argv[1],"-installed")){
-		if(user_installed_list.size() == 0){
-			std::cout<<"No packages installed on this system by xpac!"<<std::endl;
-			exit(0);
-		}
-		std::cout<<"Listing all packages installed on the system: "<<std::endl;
-		print_package_set(user_installed_list);
 	}
 	else if(!strcmp(argv[1],"-help")){
 		man_help();
@@ -488,10 +517,15 @@ int main(int argc, char ** argv){
 		}
 		calculate_indegrees();
 		remove_package(argv[2]);
+		std::cout<<"Note: Removal of packages often leads to orphaned packages! Please run xpac -cleanup to remove any orphaned packages!"<<std::endl;
 	}
 	else if(!strcmp(argv[1],"-cleanup")){
 		calculate_indegrees();
 		remove_orphans();
+	}
+	else{
+		print_err(1);
+		exit(1);
 	}
 	return 0;
 }
