@@ -11,7 +11,7 @@ CPPFILES=client.cpp client_socket.cpp man_help.cpp metadata.cpp xpac_install_uti
 all: xpac
 
 clean:
-	-rm xpac
+	rm -f xpac
 
 xpac:	$(CPPFILES)
 	$(CPP) $(CPPFLAGS) xpac $(CPPFILES) $(SUFFIXFLAGS)
