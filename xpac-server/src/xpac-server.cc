@@ -60,6 +60,13 @@ int main(int argc, char* argv[]) {
  		perror("socket error");
  		exit(EXIT_FAILURE);
  	}
+
+	// set socket option
+	int enable = 1;
+	if( setsockopt(listen_fd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
+		perror("setsocketopt failure");
+		exit(EXIT_FAILURE);
+	}
  	
 	// bind to created socket
  	if( bind(listen_fd, (struct sockaddr*) &srv_addr, sizeof(srv_addr)) < 0 ){
