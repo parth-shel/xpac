@@ -318,9 +318,14 @@ void upgrade_all_packages() {
 			auto find_itr = user_installed_list.find(*itr);
 			user_installed_list.erase(find_itr);
 			install_package((*itr).c_str());
+			std::string next_pkg_filepath = metadata_dir + "/." + *itr + ".metadata";
+			metadata * new_pkg = metadata::get_package(next_pkg_filepath);
+			//Adding the package back to the user installed list:
+			user_installed_list.insert(std::make_pair(*itr,new_pkg->get_pkg_ver()));
+			//Rewriting the user installed packages list:
+			rewrite_installed_packages();
 		}
 	}
-
 }
 
 void terminate(std::string pkg_name){
@@ -379,16 +384,16 @@ void calculate_indegrees() {
 	}
 
 	//Testing calculating indegrees:
-	for(auto itr=indegree_map.begin(); itr!=indegree_map.end(); itr++){
+	/*for(auto itr=indegree_map.begin(); itr!=indegree_map.end(); itr++){
 		std::cout<<"Node: "<<itr->first<<" "<<"Value: "<<itr->second<<std::endl;
-	}
+	}*/
 }
 
 void remove_package(std::string pkg_name){
 	auto find = indegree_map.find(pkg_name);
 	if(find != indegree_map.end()){
 		if(find->second>1){
-			std::cout<<"Cannot delete "<<pkg_name<<" as it breaks a dependency";
+			std::cout<<"Cannot delete "<<pkg_name<<" as it breaks a dependency"<<std::endl;
 		}
 		else{
 			std::cout<<"Removing "<<pkg_name<<std::endl;
