@@ -13,11 +13,17 @@
 #include <stack>
 #include <queue>
 #include <set>
+#include <map>
 #include <unordered_set>
+#include <fstream>
+#include <algorithm>
 #include <unistd.h>
 #include <sys/types.h>
 #include <dirent.h>
 #include <pwd.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <stdio.h>
 
 #include "metadata.h"
 
@@ -25,46 +31,100 @@
 struct passwd *pw = getpwuid(getuid());
 const char *homedir = pw->pw_dir;
 std::string xpac_dir = std::string(homedir) +std::string("/.xpac/");
+std::string metadata_dir = xpac_dir + ".metadata";
 std::string universe_file = xpac_dir + std::string("universe_of_packages.csv");
+std::string update_file = xpac_dir + ".updates";
 
 //Global variables and extern functions:
 std::hash<std::string> str_hash;
-
 extern int build(std:: string command);
 extern void man_help();
 extern int client_driver(char * request, char * ip);
-extern void parse_universe_of_packages(std::string, int);
-extern void print_package_set();
-extern std::set<std::string> universe_list;
-extern void print_package_set();
-extern void add_to_install_list(std::string str);
+extern void parse_universe_of_packages(std::string);
+extern void print_package_set(std::map<std::string, std::string>& to_print);
+extern void add_to_install_list(std::string name, std::string version);
 extern void calculate_users_packages();
-extern std::unordered_set<std::string> user_installed_list;
 extern void cleanup_directory(std::string);
+extern void rewrite_installed_packages();
 
+//Installation lists:
+extern std::map<std::string,std::string> user_installed_list;
+extern std::map<std::string,std::string> universe_list;
+
+//Important metadata objects:
+metadata * base;
+metadata * curr;
+
+//Important file paths:
 std::string metadata_path;
 std::string install_path;
 
+//Important dependency tree data structures:
 std::stack<std::string> dep_list;
 std::queue<std::string> bfs_queue;
 std::unordered_set<std::string> marked;
 
-static inline void xpac_dir_handler(){
-	DIR* dir = opendir(xpac_dir.c_str());
+//Important indegree calculations::
+std::map<std::string, int> indegree_map;
+
+static inline void update_from_server(){
+	client_driver(strdup("GUNI"),strdup("repo.xpac.tech"));
+	rename("GUNI",universe_file.c_str());
+}
+
+static inline void xpac_dir_handler(std::string filepath){
+	DIR* dir = opendir(filepath.c_str());
 	if (dir)
 	{
 		closedir(dir);  //Directory exists and we don't need to so anything
 	}
 	else if (ENOENT == errno)
 	{
-		/* Directory does not exist. So we need to create it */
-		mkdir(xpac_dir.c_str(),0775);
+		//Directory does not exist. So we need to create it
+		std::cout<<"Creating the directory: "<<filepath<<std::endl;
+		mkdir(filepath.c_str(),0775);
 	}
 }
 
-static inline void update_from_server(){
-	client_driver(strdup("GUNI"),strdup("repo.xpac.tech"));
-	rename("GUNI",universe_file.c_str());
+inline bool file_exists (const std::string& name) {
+	std::ifstream f(name.c_str());
+	return f.good();
+}
+
+static inline void base_handler(){
+	std::string base_filepath = metadata_dir + "/." + "base" + ".metadata"; 
+	if(!file_exists(base_filepath)) {
+		base = new metadata("base","v:0.0.0");
+		metadata::write_package(base, metadata_dir.c_str());
+	} else {
+		base = metadata::get_package(base_filepath);
+	}
+}
+
+static inline void update_file_handler(){
+	if(!file_exists(universe_file)){
+		update_from_server();
+	}
+}
+
+static void xpac_init(){
+	//Handling the xpac directory:
+	xpac_dir_handler(xpac_dir);
+	//Handling the metadata directory:
+	xpac_dir_handler(metadata_dir);
+	//Getting the latest updates from xpac:
+	update_file_handler();
+	//Handling the base package:
+	base_handler();
+	//Parsing the universe:
+	parse_universe_of_packages(universe_file);
+	//Calculating the users' packages:
+	calculate_users_packages();
+}
+
+static inline void untar_file(std::string filename) {
+	std::string untar_str = std::string("tar -xvf ") + std::string(filename);
+	system(untar_str.c_str());
 }
 
 static inline void get_from_server(const char * command_to_server,const char * pkg_name){
@@ -76,8 +136,9 @@ static inline void get_from_server(const char * command_to_server,const char * p
 	client_driver(final_command_to_server,strdup("repo.xpac.tech"));
 	
 	//To untar the recieved file:
-	std::string untar_str = std::string("tar -xvf ") + std::string(final_command_to_server);
-	system(untar_str.c_str());
+	untar_file(final_command_to_server);
+
+	//Removing the downloaded file from server:
 	remove(final_command_to_server);
 
 	//Setting metadata and install_paths
@@ -90,12 +151,13 @@ static inline void print_err(int errflag){
 	if(errflag == 2)	printf("Wrong number of arguments; please type xpac -help for help\n");
 }
 
-static void install_all_packages(){
+static bool install_all_packages(){
 
 	while(!dep_list.empty()){
 		std::string to_install = dep_list.top();
 		std::string to_display = to_install.substr(0,to_install.find("/"));
-		cleanup_directory(to_display);
+		curr = metadata::get_package(to_display + "/.metadata");
+		std::string curr_version = curr->get_pkg_ver();
 		dep_list.pop();
 		std::cout<<"Installing package: "<<to_display<<std::endl;
 		if(user_installed_list.find(to_display) != user_installed_list.end()) {
@@ -113,14 +175,19 @@ static void install_all_packages(){
 					dep_list.pop();
 				}
 				exit(1);
-			} else {
-				add_to_install_list(to_display); //Adding to the list of successfully installed packages
+			} else { //Successfully installed
+				metadata::write_package(curr, metadata_dir.c_str());
+				add_to_install_list(to_display, curr_version); //Adding to the list of successfully installed packages
+				cleanup_directory(to_display);
 			}
 		}
 	}
+
+	//Successfully installed all of them:
+	return true;
 }
 
-static void install_package(const char * pkg_name){
+static bool install_package(const char * pkg_name){
 	//Getting the package from the server itself:
 	get_from_server("GPKG-",pkg_name);
 
@@ -159,7 +226,192 @@ static void install_package(const char * pkg_name){
 	}
 
 	//Finally installing everything in the stack:
-	install_all_packages();
+	return install_all_packages();
+}
+
+void calculate_differences() {
+	std::string to_update_string;
+	std::vector<std::string> updates;
+	for(auto key_itr = user_installed_list.begin(); key_itr!=user_installed_list.end(); key_itr++) {
+		if(key_itr->second.compare(universe_list.find(key_itr->first)->second) != 0) {
+			to_update_string += key_itr->first + " " + key_itr->second + " -> " + universe_list.find(key_itr->first)->second + "\n";
+			updates.push_back(key_itr->first);
+		}
+	}
+	std::cout<<"Updates available: "<<std::endl;
+	if(to_update_string.compare("") == 0) {
+		std::cout<<"None!"<<std::endl;
+	}
+	else {
+		std::cout<<to_update_string;
+	}
+	
+	//Writing all the updates to the file
+	std::fstream file;
+	file.open(update_file, std::ios::out | std::ios::trunc);
+
+	// Simply appending to file
+	for(auto itr = updates.begin(); itr!=updates.end(); itr++)
+		file << *itr <<"\n";
+	file.close();
+}
+
+void upgrade_all_packages() {
+	std::vector<std::string> updates;
+
+	std::fstream file;
+	file.open(update_file, std::ios::in);
+
+	std::string next_line;
+	while(getline(file,next_line)) {
+		updates.push_back(next_line);
+	}
+
+	if(updates.size() == 0)	{
+		std::cout<<"No updates available!"<<std::endl;
+		return;
+	}
+
+	std::cout<<"The following packages will be updated: "<<std::endl;
+	for(auto itr = updates.begin(); itr!=updates.end(); itr++){
+		std::cout<<*itr<<std::endl;
+	}
+	char confirm;
+	do {
+		std::cout<<"Do you confirm?[Y/n]"<<std::endl;
+		std::cin>>confirm;
+	} while(confirm != 'Y' && confirm != 'n' && confirm != 'N' && confirm != 'y');
+
+	if(confirm == 'n' || confirm == 'N') {
+		exit(0);
+	}
+	else { //Updating all packages:
+		for(auto itr = updates.begin(); itr!=updates.end(); itr++) {
+			auto find_itr = user_installed_list.find(*itr);
+			user_installed_list.erase(find_itr);
+			install_package((*itr).c_str());
+		}
+	}
+
+}
+
+void terminate(std::string pkg_name){
+	base->add_dep_pkg(pkg_name);
+	metadata::write_package(base, metadata_dir.c_str());
+	exit(0);
+}
+
+void calculate_indegrees() {
+	indegree_map.clear();
+	//Adding all the installed packages to the map:
+	for(auto itr = user_installed_list.begin(); itr!=user_installed_list.end(); itr++) {
+		indegree_map.insert(std::make_pair(itr->first,0));
+	}
+
+	//Performing a breadth first search on the graph to see all reachable packages:
+	std::queue<std::string> bfs_indegree_queue;
+	std::unordered_set<std::string> indegree_visited;
+
+	//Pushing the first element into the bfs_queue:
+	bfs_indegree_queue.push("base");
+	indegree_visited.insert("base");
+
+	//Performing the bfs here:
+	while(!bfs_indegree_queue.empty()){
+		std::string next_pkg_name = bfs_indegree_queue.front();
+		bfs_indegree_queue.pop();
+
+		std::string next_pkg_filepath = metadata_dir + "/." + next_pkg_name + ".metadata";
+		metadata * next_pkg = metadata::get_package(next_pkg_filepath);
+
+		//Getting the dependency list of the next package:
+		std::vector<std::string> * next_pkg_dep_list = next_pkg->get_dep_list();
+
+		for(auto itr = next_pkg_dep_list->begin(); itr!=next_pkg_dep_list->end(); itr++) {
+			
+			//Updating indegree values in the map:
+			auto indegree_find = indegree_map.find(*itr);
+			if(indegree_find != indegree_map.end()) {
+				if(next_pkg_name.compare("base") == 0) { //One degree depth
+					indegree_find->second++;
+				}
+				else{
+					indegree_find->second += 2;
+				}
+			}
+
+			//Finding whether it has already been visited:
+			auto found = indegree_visited.find(*itr);
+			//If not found then:
+			if(found == indegree_visited.end()) {
+				indegree_visited.insert(*itr);
+				bfs_indegree_queue.push(*itr);
+			}
+		}
+	}
+
+	//Testing calculating indegrees:
+	/*for(auto itr=indegree_map.begin(); itr!=indegree_map.end(); itr++){*/
+		//std::cout<<"Node: "<<itr->first<<" "<<"Value: "<<itr->second<<std::endl;
+	/*}*/
+}
+
+void remove_package(std::string pkg_name){
+	auto find = indegree_map.find(pkg_name);
+	if(find != indegree_map.end()){
+		if(find->second>1){
+			std::cout<<"Cannot delete "<<pkg_name<<" as it breaks a dependency";
+		}
+		else{
+			std::cout<<"Removing "<<pkg_name<<std::endl;
+			//Removing relevant metadata files:
+			remove(std::string(metadata_dir + "/." + pkg_name + ".metadata").c_str());
+			//Deleting it from the dependency list of base, if applicable:
+			base->get_dep_list()->erase(std::remove(base->get_dep_list()->begin(), base->get_dep_list()->end(), pkg_name), base->get_dep_list()->end());
+			//Rewriting base's metadata:
+			metadata::write_package(base, metadata_dir.c_str());
+			//Removing package from list of all installed packages:
+			user_installed_list.erase(user_installed_list.find(pkg_name));
+			//Rewriting the user installed packages list:
+			rewrite_installed_packages();
+		}
+	}
+}
+
+void remove_orphans(){
+
+	std::vector<std::string> to_remove;
+
+	for(auto itr=indegree_map.begin(); itr!=indegree_map.end(); itr++) {
+		if(itr->second == 0){
+			to_remove.push_back(itr->first);
+		}
+	}
+
+	if(to_remove.empty()){
+		std::cout<<"No orphaned packages found!";
+		exit(0);
+	}
+
+	std::cout<<"The following packages will be removed from the system: "<<std::endl;
+	for(auto str:to_remove) {
+		std::cout<<str<<std::endl;
+	}
+
+	char confirm;
+	do {
+		std::cout<<"Do you confirm?[Y/n]"<<std::endl;
+		std::cin>>confirm;
+	} while(confirm != 'Y' && confirm != 'n' && confirm != 'N' && confirm != 'y');
+
+	if(confirm == 'n' || confirm == 'N') {
+		exit(0);
+	}
+	else { //Deleting all packages:
+		for(auto str:to_remove){
+			remove_package(str);
+		}
+	}
 }
 
 int main(int argc, char ** argv){
@@ -169,11 +421,8 @@ int main(int argc, char ** argv){
 	}
 
 	//Initializing:
-	xpac_dir_handler();
-	int flag = (!strcmp(argv[1],"-update"))?1:0;
-	parse_universe_of_packages(universe_file,flag);
-	calculate_users_packages();
-
+	xpac_init();
+	
 	if(!strcmp(argv[1],"-install")){
 		if(argc<3){
 			print_err(2);
@@ -182,24 +431,48 @@ int main(int argc, char ** argv){
 
 		char * pkg_name = strdup(argv[2]);
 
+		//Checking if package available in the repository:
 		auto find_itr = universe_list.find(std::string(pkg_name));
 		if(find_itr == universe_list.end()){	//Package not available to install in the repo!
 			std::cout<<"Sorry, package not available in the repository! Please check the website for more information!"<<std::endl;
 			exit(0);
 		}
+
 		//Installing the package:
-		install_package(pkg_name);
+		bool result = install_package(pkg_name);
+
+		//Terminating:
+		if(result)
+			terminate(pkg_name);
+		else
+			exit(1);	//Should not reach here!
 	}
 	else if(!strcmp(argv[1],"-update")){
 		std::cout<<"Updating xpac"<<std::endl;
-		update_from_server();	
+		std::cout<<"Fetching updated package list from server: "<<std::endl;
+		update_from_server();
+		parse_universe_of_packages(universe_file);
+		std::cout<<"Calculating differences: "<<std::endl;
+		calculate_differences();
+	}
+	else if(!strcmp(argv[1], "-upgrade")){
+		std::cout<<"Upgrading all packages"<<std::endl;
+		upgrade_all_packages();
 	}
 	else if(!strcmp(argv[1],"-list")){
 		std::cout<<"Listing all packages available for installation: "<<std::endl;
-		print_package_set();	
+		print_package_set(universe_list);	
 	}
 	else if(!strcmp(argv[1],"-help")){
 		man_help();
+	}
+	else if(!strcmp(argv[1],"-remove")){
+		calculate_indegrees();
+		remove_package(argv[2]);
+	}
+	else if(!strcmp(argv[1],"-cleanup")){
+		calculate_indegrees();
+		remove_orphans();
 	}
 	return 0;
 }

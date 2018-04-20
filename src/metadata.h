@@ -22,12 +22,12 @@ class metadata{
 	metadata(): metadata(std::string(""),std::string("")) {}
 	std::vector<std::string> * get_dep_list();
 	std::string get_info();
+	std::string get_pkg_ver() { return this->pkg_ver; }
 
 	//Static functions for basic file io:
-	static void write_package(metadata * package);
+	static void write_package(metadata * package, std::string filepath);
 	static metadata * get_package(std::string filepath);
 
-	//For debugging purposes only:
 	void add_dep_pkg(std::string pkg_name);
 };
 
