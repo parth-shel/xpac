@@ -4,6 +4,9 @@ $(document).ready(function() {
 		$("#button2").hide();
 		$("#button3").hide();
 		$("#button4").hide();
+		$("#button01").hide();
+		$("#button02").hide();
+		$("#button03").hide();
 	}
 	
 	// create an instance of ClipboardJS
