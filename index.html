@@ -8,8 +8,8 @@
     <meta name="HandheldFriendly" content="True">
 
     <!-- meta tag for favicon-->
-    <link rel="shortcut icon" href="favicon.jpg" type="image/x-icon">
-    <link rel="icon" href="favicon.jpg" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+    <link rel="icon" href="favicon.png" type="image/x-icon">
 
   <meta name="description=" content="xpac - A Cross-platform Package Manager" />
     <meta name="keywords" content="xpac,xpac.tech,xpac package manager,package manager" />
@@ -43,7 +43,7 @@
     <style>
     h1 {
       font-size: 64px;
-    font-weight: bold;
+      font-weight: bold;
     }
 
     .inline {
@@ -107,11 +107,6 @@
     <div class="jumbotron jumbotron-fluid" id="installation-instructions">
       <div class="container">
         <h3>Installation Instructions</h3>
-        <p class="lead">Click on the download icon below for x86</p>
-        <p>Steps to unzip....</p>
-
-        <p class="lead">OR</p>
-        <p class="lead">To compile from source, follow these steps on the order given:</p>
          <p>
           1. In your terminal, run <code id="download-cmd">git clone https://github.com/parth-shel/xpac.git -b prod xpac</code>.
           <button type="button" class="btn btn-link btn-small" data-clipboard-text="git clone https://github.com/parth-shel/xpac.git -b prod xpac" style="font-size:10px" id="button1">
@@ -148,7 +143,7 @@
           <span>
             <a href="https://github.com/parth-shel/xpac/" target="_blank"><i class="fab fa-github-square fa-3x" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="GitHub"></i></a>
           </span>
-          <span><p>Follow the development on GitHub.</p></span>
+          <p>Follow the development on GitHub.</p>
         </div>
 
         <!-- Feedback Form -->
@@ -156,7 +151,7 @@
           <span>
             <a href="https://goo.gl/forms/W7dcJhD2TjRr2vL12" target="_blank"><i class="fas fa-comment-alt fa-3x" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Feedback Form"></i></a>
           </span>
-          <span><p>Provide feedback or bug report here.</p></span>
+          <p>Provide feedback or bug report here.</p>
         </div>
 
         <!-- Download Link -->
@@ -164,7 +159,7 @@
           <span>
             <a href="./xpac.tar.gz" target="_self"><i class="fas fa-file-archive fa-3x" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="Download Tarball"></i></a>
           </span>
-          <span><p>Download xpac here.</p></span>
+          <p>Download xpac here.<br>Click <a href="" data-toggle="modal" data-target="#tarballInstallation"><b>here</b></a> for instructions.</p>
         </div>
 
         <!-- IRC Channel details -->
@@ -172,22 +167,22 @@
             <span>
               <button class="btn btn-link" data-toggle="modal" data-target="#irc"><i class="fas fa-envelope fa-3x" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="IRC Channel"></i></button>
             </span>
-            <span><p>Connect to our IRC channel.</p></span>
+            <p>Connect to our IRC channel.</p>
         </div>
 
-        <!-- Modal for instructions on IRC channel -->
+        <!-- Modal: Instructions on IRC channel -->
         <div class="modal fade" id="irc" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
           <div class="modal-dialog" role="document">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Connect to our IRC channel: Instructions</h5>
+                <h5 class="modal-title" id="ircHead">Connect to our IRC channel: Instructions</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
               <div class="modal-body">
                 <p>
-                  1. Use an <a href="https://en.wikipedia.org/wiki/Comparison_of_Internet_Relay_Chat_clients" target="_blank">IRC client</a> of your choice.
+                  1. Use an IRC client of your choice. Click <a href="https://en.wikipedia.org/wiki/Comparison_of_Internet_Relay_Chat_clients" target="_blank"><b>here</b></a> for a list of clients.
                 </p>
 
                 <p>
@@ -197,6 +192,36 @@
                 <p>
                   3. Join the channel <samp>#xpacHelp</samp> to get in touch with other users and our developer team.
                 </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal: Installation instructions for tarball -->
+        <div class="modal fade bd-example-modal-lg" id="tarballInstallation" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Installation Instructions for Tarball</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                 <p>
+                   1. In your terminal, open the directory where the tarball has been downloaded.
+                 </p>
+                 <p>
+                  2. In your terminal, run <code id="tar-cmd">tar -xvf xpac.tar.gz</code>.
+                </p>
+                <p>
+                  3. Open the directory by running <code id="open-dir-tar">cd xpac-x86_64</code>.
+                </p>
+                <p>4. Start installation by running
+                  <code id="install-script">sudo install-xpac</code>.
+                </p>
+                <p>5. Enter your password when prompted.</p>
+                <p class="lead">You are all set!</p>
               </div>
             </div>
           </div>
