@@ -133,7 +133,12 @@ static inline void get_from_server(const char * command_to_server,const char * p
 	std::string pkg_hash = std::to_string(str_hash(std::string(pkg_name))).c_str();
 	command.append(pkg_hash);
 	char * final_command_to_server = (char*)command.c_str();
-	client_driver(final_command_to_server,strdup("repo.xpac.tech"));
+	int res = client_driver(final_command_to_server,strdup("repo.xpac.tech"));
+
+	if(res == -1){
+		remove(final_command_to_server);
+		exit(1);
+	}
 	
 	//To untar the recieved file:
 	untar_file(final_command_to_server);
@@ -162,6 +167,7 @@ static bool install_all_packages(){
 		std::cout<<"Installing package: "<<to_display<<std::endl;
 		if(user_installed_list.find(to_display) != user_installed_list.end()) {
 			std::cout<<"Already installed "<<to_display<<"!"<<std::endl;
+			cleanup_directory(to_display);
 			if(dep_list.empty())	exit(1);
 		} else {
 			int rem = system(to_install.c_str());
@@ -351,9 +357,9 @@ void calculate_indegrees() {
 	}
 
 	//Testing calculating indegrees:
-	/*for(auto itr=indegree_map.begin(); itr!=indegree_map.end(); itr++){*/
-		//std::cout<<"Node: "<<itr->first<<" "<<"Value: "<<itr->second<<std::endl;
-	/*}*/
+	for(auto itr=indegree_map.begin(); itr!=indegree_map.end(); itr++){
+		std::cout<<"Node: "<<itr->first<<" "<<"Value: "<<itr->second<<std::endl;
+	}
 }
 
 void remove_package(std::string pkg_name){
@@ -463,10 +469,23 @@ int main(int argc, char ** argv){
 		std::cout<<"Listing all packages available for installation: "<<std::endl;
 		print_package_set(universe_list);	
 	}
+	else if(!strcmp(argv[1],"-installed")){
+		if(user_installed_list.size() == 0){
+			std::cout<<"No packages installed on this system by xpac!"<<std::endl;
+			exit(0);
+		}
+		std::cout<<"Listing all packages installed on the system: "<<std::endl;
+		print_package_set(user_installed_list);
+	}
 	else if(!strcmp(argv[1],"-help")){
 		man_help();
 	}
 	else if(!strcmp(argv[1],"-remove")){
+		auto find_itr = user_installed_list.find(std::string(argv[2]));
+		if(find_itr == user_installed_list.end()){	//Package not available to install in the repo!
+			std::cout<<"Sorry, the package requested for removal is not installed on the current system!"<<std::endl;
+			exit(0);
+		}
 		calculate_indegrees();
 		remove_package(argv[2]);
 	}
