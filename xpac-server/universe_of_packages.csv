@@ -17,6 +17,8 @@ PKGID,Package Name,Version,File Name
 2443862601747690627,pkgGamma,v:1.0,pkgGamma.tar
 2292386891622054561,pkgDelta,v:1.0,pkgDelta.tar
 18345866965089363306,node,v:9.11.1,node.tar
-2785474260509016634,python,v:3.5.1,python.tar
+11915796676316591043,python3,v:3.5.1,python3.tar
 6661479183008969825,zathura,v:0.3.9,zathura.tar
 3480215724451040604,girara,v:0.2.9,girara.tar
+1160839027134750967,nano,v:2.9.5,nano.tar
+2275126997649275234,zsh,v:5.5.1,zsh.tar
