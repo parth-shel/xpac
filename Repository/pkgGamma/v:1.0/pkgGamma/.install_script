@@ -1,0 +1,4 @@
+#!/bin/bash
+CYAN='\033[0;36m'
+NC='\033[0m'
+printf "${CYAN}Package Gamma has been installed!${NC}\n"

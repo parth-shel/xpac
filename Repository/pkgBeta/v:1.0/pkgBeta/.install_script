@@ -1,0 +1,4 @@
+#!/bin/bash
+PURPLE='\033[0;35m'
+NC='\033[0m'
+printf "${PURPLE}Package Beta has been installed!${NC}\n"
