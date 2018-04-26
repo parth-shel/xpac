@@ -4,12 +4,12 @@ PKGID,Package Name,Version,File Name
 12432341034569643010,C,v:1.0,C.tar
 5317880023309298450,D,v:1.0,D.tar
 13282412028644523447,utkycow,v:1.0,utkycow.tar
-6641749019096611834,pkgFoo,v:2.0,pkgFoo.tar
-14435907002429040050,pkgBar,v:2.0,pkgBar.tar
+6641749019096611834,pkgFoo,v:1.0,pkgFoo.tar
+14435907002429040050,pkgBar,v:1.0,pkgBar.tar
 12502282598197550060,pkgIota,v:1.0,pkgIota.tar
 9871648012359170066,pkgTau,v:1.0,pkgTau.tar
-11756393164799772038,pkgSigma,v:2.0,pkgSigma.tar
-2292386891622054561,pkgDelta,v:2.0,pkgDelta.tar
+11756393164799772038,pkgSigma,v:1.0,pkgSigma.tar
+2292386891622054561,pkgDelta,v:1.0,pkgDelta.tar
 5808697654694210223,pkgAlpha,v:1.0,pkgAlpha.tar
 3943053456671886739,pkgRho,v:1.0,pkgRho.tar
 2443862601747690627,pkgGamma,v:1.0,pkgGamma.tar
@@ -27,3 +27,4 @@ PKGID,Package Name,Version,File Name
 17395478317560604694,readline,v:6.3,readline.tar
 4868129871858134152,scrot,v:0.8,scrot.tar
 11717283447059218313,giblib,v:1.2.4,giblib.tar
+12322028604296165444,screenfetch,v:3.8.0,screenfetch.tar
