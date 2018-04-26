@@ -536,7 +536,20 @@ int main(int argc, char ** argv){
 		print_package_set(universe_list);	
 	}
 	else if(!strcmp(argv[1],"-protect")){
-	
+		char * pkg_name = strdup(argv[2]);
+
+		auto find_itr = user_installed_list.find(std::string(pkg_name));
+		if(find_itr == user_installed_list.end()){	//Package not available to install in the repo!
+			std::cout<<"Sorry, package not installed on the system!"<<std::endl;
+			exit(1);
+		}
+
+		//Actually protecting the package right now:
+		if(std::find(base->get_dep_list()->begin(), base->get_dep_list()->end(), std::string(pkg_name)) == base->get_dep_list()->end()){
+			terminate(pkg_name);
+		}
+		std::cout<<"Package "<<pkg_name<<" successfully added to the protected list"<<std::endl;
+		exit(0);
 	}
 	else if(!strcmp(argv[1],"-help")){
 		man_help();
