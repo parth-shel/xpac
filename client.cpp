@@ -572,5 +572,5 @@ int main(int argc, char ** argv){
 		print_err(1);
 		exit(1);
 	}
-	return 0;
+	return 0; //Successful exit
 }
