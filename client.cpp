@@ -180,6 +180,25 @@ static inline void print_err(int errflag){
 
 static bool install_all_packages(){
 
+	std::stack<std::string> display_stack(dep_list);
+
+	std::cout<<"The following packages will be installed: "<<std::endl;
+	while(!display_stack.empty()){
+		std::string next_pkg = display_stack.top();
+		std::cout<<next_pkg.substr(0,next_pkg.find("/"))<<std::endl;
+		display_stack.pop();
+	}
+
+	char confirm;
+	do {
+		std::cout<<"Do you confirm?[Y/n]"<<std::endl;
+		std::cin>>confirm;
+	} while(confirm != 'Y' && confirm != 'n' && confirm != 'N' && confirm != 'y');
+
+	if(confirm == 'n' || confirm == 'N') {
+		exit(0);
+	}
+
 	while(!dep_list.empty()){
 		std::string to_install = dep_list.top();
 		std::string to_display = to_install.substr(0,to_install.find("/"));
