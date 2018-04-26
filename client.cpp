@@ -471,6 +471,11 @@ int main(int argc, char ** argv){
 			exit(0);
 		}
 
+		if(user_installed_list.find(std::string(pkg_name)) != user_installed_list.end()) {
+			std::cout<<"Already installed "<<pkg_name<<"!"<<std::endl;
+			exit(1);
+		}
+
 		//Installing the package:
 		bool result = install_package(pkg_name);
 
@@ -510,6 +515,9 @@ int main(int argc, char ** argv){
 		}
 		std::cout<<"Listing all packages available for installation: "<<std::endl;
 		print_package_set(universe_list);	
+	}
+	else if(!strcmp(argv[1],"-protect")){
+	
 	}
 	else if(!strcmp(argv[1],"-help")){
 		man_help();
